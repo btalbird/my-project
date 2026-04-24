@@ -1,0 +1,71 @@
+<svg width="900" height="700" viewBox="0 0 900 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two people exchanging food">
+  <!-- Flat vector (reference-like): solid fills, crisp edges, no shadows -->
+
+  <!-- background -->
+  <rect width="900" height="700" fill="#F3F4F6"/>
+
+  <!-- simple scene ground -->
+  <path d="M120 585C240 642 340 660 450 660C566 660 664 642 780 585" stroke="#111827" stroke-opacity="0.10" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- left: woman cook -->
+  <g>
+    <!-- chef hat -->
+    <path d="M248 205C252 180 273 162 300 162C327 162 348 180 352 205C374 205 392 222 392 244C392 266 374 284 352 284H248C226 284 208 266 208 244C208 222 226 205 248 205Z" fill="#FFFFFF" stroke="#111827" stroke-opacity="0.12" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M238 284H362" stroke="#111827" stroke-opacity="0.10" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- head + hair -->
+    <ellipse cx="300" cy="262" rx="52" ry="58" fill="#8D5524"/>
+    <path d="M245 270C245 226 275 196 308 196C350 196 377 230 377 274C377 304 361 330 336 344C336 314 320 292 300 292C280 292 264 314 264 344C252 336 245 308 245 270Z" fill="#111827" fill-opacity="0.18"/>
+
+    <!-- face -->
+    <path d="M282 268C288 272 294 272 300 268" stroke="#111827" stroke-opacity="0.22" stroke-width="4" stroke-linecap="round"/>
+    <path d="M312 268C318 272 324 272 330 268" stroke="#111827" stroke-opacity="0.22" stroke-width="4" stroke-linecap="round"/>
+    <path d="M292 292C304 302 316 302 328 292" stroke="#111827" stroke-opacity="0.20" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- chef coat -->
+    <path d="M206 520C206 420 244 348 300 348C356 348 394 420 394 520V592C394 608 381 621 365 621H235C219 621 206 608 206 592V520Z" fill="#E5E7EB" stroke="#111827" stroke-opacity="0.12" stroke-width="4"/>
+    <path d="M300 360V614" stroke="#111827" stroke-opacity="0.08" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- apron -->
+    <path d="M246 404C246 382 264 364 286 364H314C336 364 354 382 354 404V586C354 600 343 611 329 611H271C257 611 246 600 246 586V404Z" fill="#FFFFFF" stroke="#111827" stroke-opacity="0.12" stroke-width="4"/>
+
+    <!-- arm -->
+    <path d="M372 450C416 438 448 438 476 450" stroke="#111827" stroke-opacity="0.14" stroke-width="18" stroke-linecap="round"/>
+    <path d="M372 450C414 440 446 440 476 450" stroke="#D1D5DB" stroke-width="12" stroke-linecap="round"/>
+    <!-- hand -->
+    <path d="M492 458C502 458 510 450 510 440C510 430 502 422 492 422C484 422 478 426 474 434C468 435 463 441 463 448C463 455 468 461 474 462C478 456 484 458 492 458Z" fill="#8D5524" stroke="#111827" stroke-opacity="0.12" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+
+  <!-- right: everyday person -->
+  <g>
+    <!-- head + hair -->
+    <ellipse cx="610" cy="262" rx="52" ry="58" fill="#6D4C41"/>
+    <path d="M555 272C555 228 585 196 618 196C660 196 687 230 687 274C687 304 671 330 646 344C646 314 630 292 610 292C590 292 574 314 574 344C562 336 555 308 555 272Z" fill="#111827" fill-opacity="0.16"/>
+
+    <!-- face -->
+    <path d="M592 268C598 272 604 272 610 268" stroke="#111827" stroke-opacity="0.22" stroke-width="4" stroke-linecap="round"/>
+    <path d="M622 268C628 272 634 272 640 268" stroke="#111827" stroke-opacity="0.22" stroke-width="4" stroke-linecap="round"/>
+    <path d="M602 292C614 302 626 302 638 292" stroke="#111827" stroke-opacity="0.20" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- hoodie -->
+    <path d="M516 520C516 420 554 348 610 348C666 348 704 420 704 520V592C704 608 691 621 675 621H545C529 621 516 608 516 592V520Z" fill="#CBD5E1" stroke="#111827" stroke-opacity="0.12" stroke-width="4"/>
+    <path d="M568 368C588 394 602 408 610 408C618 408 632 394 652 368" stroke="#111827" stroke-opacity="0.10" stroke-width="6" stroke-linecap="round"/>
+    <path d="M580 428C594 402 606 394 610 394C614 394 626 402 640 428" stroke="#111827" stroke-opacity="0.10" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- arm -->
+    <path d="M528 450C484 438 452 438 424 450" stroke="#111827" stroke-opacity="0.14" stroke-width="18" stroke-linecap="round"/>
+    <path d="M528 450C486 440 454 440 424 450" stroke="#94A3B8" stroke-width="12" stroke-linecap="round"/>
+    <!-- hand -->
+    <path d="M408 458C398 458 390 450 390 440C390 430 398 422 408 422C416 422 422 426 426 434C432 435 437 441 437 448C437 455 432 461 426 462C422 456 416 458 408 458Z" fill="#6D4C41" stroke="#111827" stroke-opacity="0.12" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+
+  <!-- food container -->
+  <g>
+    <path d="M382 418C382 404 394 392 408 392H492C506 392 518 404 518 418V462C518 476 506 488 492 488H408C394 488 382 476 382 462V418Z" fill="#FFFFFF" stroke="#111827" stroke-opacity="0.14" stroke-width="4"/>
+    <path d="M394 418H506" stroke="#111827" stroke-opacity="0.12" stroke-width="6" stroke-linecap="round"/>
+    <path d="M410 438C424 426 438 426 450 438C462 450 476 450 490 438" stroke="#F59E0B" stroke-opacity="0.75" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="452" cy="464" r="6" fill="#22C55E" fill-opacity="0.70"/>
+    <circle cx="472" cy="464" r="6" fill="#EF4444" fill-opacity="0.60"/>
+  </g>
+</svg>
+

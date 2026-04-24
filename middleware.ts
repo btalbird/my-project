@@ -1,0 +1,28 @@
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+
+/** Keep in sync with [lib/session.ts](lib/session.ts) — middleware cannot import server-only helpers. */
+const SESSION_COOKIE = "itk_uid"
+
+function needsAuth(pathname: string) {
+  if (pathname === "/orders" || pathname.startsWith("/orders/")) return true
+  return false
+}
+
+export function middleware(req: NextRequest) {
+  if (!needsAuth(req.nextUrl.pathname)) return NextResponse.next()
+
+  const uid = req.cookies.get(SESSION_COOKIE)?.value
+  if (!uid) {
+    const url = req.nextUrl.clone()
+    url.pathname = "/signin"
+    url.searchParams.set("next", `${req.nextUrl.pathname}${req.nextUrl.search}`)
+    return NextResponse.redirect(url)
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ["/orders", "/orders/:path*"],
+}
