@@ -10,14 +10,16 @@ export const dynamic = "force-dynamic"
  */
 export async function GET() {
   const databaseUrlConfigured = Boolean(process.env.DATABASE_URL?.trim())
+  const directUrlConfigured = Boolean(process.env.DIRECT_URL?.trim())
 
-  if (!databaseUrlConfigured) {
+  if (!databaseUrlConfigured || !directUrlConfigured) {
     return NextResponse.json(
       {
         ok: false,
-        databaseUrlConfigured: false,
+        databaseUrlConfigured,
+        directUrlConfigured,
         dbReachable: false,
-        hint: "Set DATABASE_URL in Vercel Project → Settings → Environment Variables, then redeploy.",
+        hint: "Set DATABASE_URL and DIRECT_URL on Vercel (Supabase: transaction pooler + session pooler — see .env.example), then redeploy.",
       },
       { status: 503 },
     )
@@ -28,6 +30,7 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       databaseUrlConfigured: true,
+      directUrlConfigured: true,
       dbReachable: true,
     })
   } catch {
@@ -35,8 +38,9 @@ export async function GET() {
       {
         ok: false,
         databaseUrlConfigured: true,
+        directUrlConfigured: true,
         dbReachable: false,
-        hint: "DATABASE_URL is set but the database did not accept a query. Run `pnpm db:migrate` and `pnpm db:seed` against this URL (see .env.example).",
+        hint: "DATABASE_URL/DIRECT_URL are set but the database did not accept a query. Run `pnpm db:migrate` and `pnpm db:seed` against this project (see .env.example).",
       },
       { status: 503 },
     )

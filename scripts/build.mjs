@@ -1,5 +1,6 @@
 /**
- * Vercel: apply Prisma migrations then `next build` (DATABASE_URL must be set on the project).
+ * Vercel: apply Prisma migrations then `next build`.
+ * Set DATABASE_URL (transaction pooler) and DIRECT_URL (session/direct) on the project — see .env.example (Supabase).
  * Local: `next build` only so you can build without a running Postgres.
  */
 import { execSync } from "node:child_process"
