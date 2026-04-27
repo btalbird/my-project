@@ -20,7 +20,10 @@ export const metadata: Metadata = {
   description: 'Order food from your favorite restaurants, delivered to your door',
   generator: 'v0.app',
   icons: {
-    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
     apple: '/icon.svg',
   },
 }
