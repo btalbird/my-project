@@ -1,6 +1,12 @@
 import { Suspense } from "react"
+import type { Metadata } from "next"
 
 import { SignUpForm } from "@/components/sign-up-form"
+
+export const metadata: Metadata = {
+  title: "Sign up | In The Kitchen",
+  description: "Create an In The Kitchen account to save favorites, track orders, and get local updates.",
+}
 
 export default function SignUpPage() {
   return (
