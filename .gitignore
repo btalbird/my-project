@@ -21,3 +21,6 @@ tsconfig.tsbuildinfo
 node_modules
 .next/
 .DS_Store
+
+# Local tooling (workspace-installed binaries, e.g. gh)
+.tools/
