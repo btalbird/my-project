@@ -10,6 +10,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+/** Same-origin paths only; rejects protocol-relative URLs like `//evil.com`. */
+function safePostLoginPath(next: string | null): string {
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return "/"
+  return next
+}
+
 export function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -48,7 +54,7 @@ export function SignInForm() {
                     return
                   }
                   const next = searchParams.get("next")
-                  router.push(next && next.startsWith("/") ? next : "/")
+                  router.push(safePostLoginPath(next))
                   router.refresh()
                 } finally {
                   setPending(false)
