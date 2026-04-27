@@ -13,7 +13,8 @@ interface RestaurantCardProps {
     rating: number
     deliveryTime: string
     deliveryFee: string
-    promo?: string
+    /** Matches demo/DB rows where promo may be null when absent. */
+    promo?: string | null
   }
 }
 
