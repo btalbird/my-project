@@ -12,6 +12,21 @@ function run(cmd) {
 }
 
 if (onVercel) {
+  if (!process.env.DATABASE_URL?.trim()) {
+    console.error(`
+[build] DATABASE_URL is not set in this Vercel build.
+
+Fix (dashboard):
+  1. Vercel → your project → Settings → Environment Variables
+  2. Add or edit DATABASE_URL (exact name, case-sensitive)
+  3. Under "Environments", check Production (and Preview if this deploy is Preview)
+     — variables scoped only to "Development" are NOT available to Vercel builds.
+  4. Save, then Redeploy.
+
+See .env.example for the Supabase connection string shape.
+`)
+    process.exit(1)
+  }
   run("prisma migrate deploy")
 }
 
