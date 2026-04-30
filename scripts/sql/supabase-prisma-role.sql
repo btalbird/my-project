@@ -1,6 +1,6 @@
 -- Optional: run once in Supabase SQL Editor (https://supabase.com/dashboard/project/_/sql/new)
 -- if you want a dedicated DB role for Prisma instead of using the default `postgres` user in URIs.
--- Then use user `prisma` in both DATABASE_URL and DIRECT_URL (see .env.example).
+-- Then use user `prisma` in DATABASE_URL (see .env.example).
 -- Docs: https://supabase.com/docs/guides/database/prisma
 
 create user "prisma" with password 'REPLACE_WITH_STRONG_PASSWORD' bypassrls createdb;
