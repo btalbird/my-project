@@ -211,7 +211,7 @@ function ContactUsPageInner() {
                     <Mail className="mt-0.5 h-4 w-4 text-muted-foreground" aria-hidden />
                     <div>
                       <p className="font-medium text-foreground">Email</p>
-                      <p className="text-muted-foreground">support@inthekitchen.example</p>
+                      <p className="text-muted-foreground">support@munch.example</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">

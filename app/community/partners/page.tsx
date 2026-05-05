@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { COMMUNITY_PARTNERS } from "@/lib/community-partners"
 
 export const metadata: Metadata = {
-  title: "Our community partners | In The Kitchen",
+  title: "Our community partners | Munch",
   description:
-    "Browse local organizations and projects In The Kitchen supports through neighborhood profit sharing—third spaces, childcare, mutual aid, and more.",
+    "Browse local organizations and projects Munch supports through neighborhood profit sharing—third spaces, childcare, mutual aid, and more.",
 }
 
 export default function CommunityPartnersPage() {

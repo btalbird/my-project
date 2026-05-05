@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 
 export const metadata: Metadata = {
-  title: "Bring ITK to your neighborhood | In The Kitchen",
+  title: "Bring Munch to your neighborhood | Munch",
   description:
     "How MEHKO-style home kitchen programs are expanding, and where to watch local legislation—with official links so you can learn more and get involved.",
 }
@@ -36,13 +36,13 @@ export default function BringItkToYourNeighborhoodPage() {
               For cooks
             </Link>
             <span className="mx-2">/</span>
-            <span className="font-medium text-foreground">Bring ITK to your neighborhood</span>
+            <span className="font-medium text-foreground">Bring Munch to your neighborhood</span>
           </nav>
 
           <div className="mt-6 space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Bring In The Kitchen to your neighborhood
+                Bring Munch to your neighborhood
               </h1>
               <Badge variant="secondary" className="rounded-full">
                 MEHKO is spreading
@@ -64,7 +64,7 @@ export default function BringItkToYourNeighborhoodPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-full">
-                <Link href="/for-cooks/mehko-counties">California county list (on ITK)</Link>
+                <Link href="/for-cooks/mehko-counties">California county list (on Munch)</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-full">
                 <Link href="/promos/2">What is MEHKO?</Link>
@@ -85,7 +85,7 @@ export default function BringItkToYourNeighborhoodPage() {
                 A county can vote in a pilot today, open applications next quarter, or pause while environmental health
                 builds forms. A state may introduce a bill one session and carry it over the next. That rhythm can feel
                 chaotic—but it also means there are more openings than ever for neighbors who want safe, legal home
-                kitchens and for platforms like In The Kitchen that are willing to invest alongside you.
+                kitchens and for platforms like Munch that are willing to invest alongside you.
               </p>
               <p>
                 Nothing here is legal advice. Always read the ordinance or bill text, then talk with your local

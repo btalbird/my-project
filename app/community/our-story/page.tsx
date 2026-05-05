@@ -26,7 +26,7 @@ export default function OurStoryPage() {
                 Our story
               </h1>
               <Badge variant="secondary" className="rounded-full">
-                In The Kitchen
+                Munch
               </Badge>
             </div>
             <p className="max-w-3xl text-muted-foreground">
@@ -56,7 +56,7 @@ export default function OurStoryPage() {
                   Somewhere in between is the thing most of us want: a meal that tastes like it was made for you.
                 </p>
                 <p>
-                  In The Kitchen exists to help neighbors share what they already do best—cook—while giving everyone an
+                  Munch exists to help neighbors share what they already do best—cook—while giving everyone an
                   easier way to discover new dishes, support small cooks, and build real connections.
                 </p>
               </CardContent>

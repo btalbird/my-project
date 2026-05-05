@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const metadata: Metadata = {
-  title: "Community-led spaces | In The Kitchen",
+  title: "Community-led spaces | Munch",
   description:
-    "How In The Kitchen partners with neighborhood leaders, reinvests 5% of local profits into community projects, and how to reach out to partner.",
+    "How Munch partners with neighborhood leaders, reinvests 5% of local profits into community projects, and how to reach out to partner.",
 }
 
 const PARTNER_EXAMPLES = [
@@ -47,7 +47,7 @@ export default function CommunityLedSpacesPage() {
               </Badge>
             </div>
             <p className="max-w-3xl text-muted-foreground">
-              In The Kitchen partners with <span className="font-medium text-foreground">local community leaders</span>{" "}
+              Munch partners with <span className="font-medium text-foreground">local community leaders</span>{" "}
               in each neighborhood you help us serve. We want the money you spend to flow back into your community—in
               as many honest, practical ways as we can.
             </p>
@@ -94,7 +94,7 @@ export default function CommunityLedSpacesPage() {
                 <p>
                   <span className="font-medium text-foreground">Five percent of profits</span> from each neighborhood or
                   area we serve is donated to trusted community leaders and their projects. The goal is simple: when you
-                  order through In The Kitchen, part of what you spend helps fund the fabric of the place you live—not
+                  order through Munch, part of what you spend helps fund the fabric of the place you live—not
                   somewhere abstract.
                 </p>
                 <p className="text-sm">

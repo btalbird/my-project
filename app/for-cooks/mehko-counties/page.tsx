@@ -18,7 +18,7 @@ const CDPH_MEHKO =
   "https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/MicroenterpriseHomeKitchenOperations.aspx"
 
 export const metadata: Metadata = {
-  title: "California MEHKO counties & legislation watchlist | In The Kitchen",
+  title: "California MEHKO counties & legislation watchlist | Munch",
   description:
     "California jurisdictions where MEHKO-style home kitchen programs have been reported, plus examples of MEHKO-related legislation in other states—always verify with official sources.",
 }

@@ -106,7 +106,7 @@ export function SignInForm() {
               </Button>
 
               <p className="text-center text-xs text-muted-foreground">
-                Demo account: <span className="font-medium text-foreground">demo@inthekitchen.com</span> /{" "}
+                Demo account: <span className="font-medium text-foreground">demo@munch.com</span> /{" "}
                 <span className="font-medium text-foreground">demo1234</span> (seeded orders after{" "}
                 <code className="rounded bg-muted px-1">node ./scripts/seed.mjs</code>).
               </p>
@@ -149,7 +149,7 @@ export function SignInForm() {
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border bg-card/60 px-4 py-2 text-sm text-foreground backdrop-blur">
                 <span className="h-2 w-2 rounded-full bg-primary" />
-                In The Kitchen
+                Munch
               </div>
               <h2 className="text-balance font-serif text-3xl font-bold text-foreground">
                 Nourishing community, one meal at a time

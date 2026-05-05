@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'In The Kitchen - Food Delivery',
+  title: 'Munch - Food Delivery',
   description: 'Order food from your favorite restaurants, delivered to your door',
   generator: 'v0.app',
   icons: {

@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 /** Default demo password; override with DEMO_USER_PASSWORD when generating a new hash. */
-const DEMO_EMAIL = "demo@inthekitchen.com"
+const DEMO_EMAIL = "demo@munch.com"
 const demoPassword = process.env.DEMO_USER_PASSWORD ?? "demo1234"
 
 const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")

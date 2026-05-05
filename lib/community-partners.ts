@@ -64,7 +64,7 @@ export const COMMUNITY_PARTNERS: CommunityPartner[] = [
     name: "Capitol Corridor Mutual Aid",
     neighborhood: "Sacramento, CA",
     description:
-      "Grassroots network for grocery rides, fridge restocks after hospital stays, and pop-up produce stands sourced from small growers. In The Kitchen profit share helps cover fuel and cold bags.",
+      "Grassroots network for grocery rides, fridge restocks after hospital stays, and pop-up produce stands sourced from small growers. Munch profit share helps cover fuel and cold bags.",
     imageSrc:
       "https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?w=800&q=80&auto=format&fit=crop",
     websiteUrl: "https://example.org/capitol-corridor-aid",

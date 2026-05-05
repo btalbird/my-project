@@ -56,7 +56,7 @@ export function Header() {
               <Leaf className="w-5 h-5 text-primary" />
             </div>
             <div className="hidden sm:block">
-              <span className="text-lg font-serif font-bold text-foreground">In The Kitchen</span>
+              <span className="text-lg font-serif font-bold text-foreground">munch</span>
               <p className="text-xs text-muted-foreground -mt-0.5">Nourishing Community</p>
             </div>
             <span className="sr-only">Go to home page</span>

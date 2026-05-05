@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const metadata: Metadata = {
-  title: "Food donation & community | In The Kitchen",
+  title: "Food donation & community | Munch",
   description:
-    "How MEHKO same-day rules reduce waste, and how In The Kitchen partners with food banks and nonprofits to support neighbors.",
+    "How MEHKO same-day rules reduce waste, and how Munch partners with food banks and nonprofits to support neighbors.",
 }
 
 export default function FoodDonationPage() {
@@ -40,7 +40,7 @@ export default function FoodDonationPage() {
               </Badge>
             </div>
             <p className="max-w-3xl text-muted-foreground">
-              A few things we want you to know about how MEHKO kitchens operate on In The Kitchen—and how we try to
+              A few things we want you to know about how MEHKO kitchens operate on Munch—and how we try to
               stand with everyone in the neighborhood, including when times are tight.
             </p>
             <div className="flex flex-wrap gap-2 pt-2">
@@ -81,7 +81,7 @@ export default function FoodDonationPage() {
               </CardHeader>
               <CardContent className="space-y-3 text-muted-foreground">
                 <p>
-                  In an effort to eliminate food waste, In The Kitchen has partnered with{" "}
+                  In an effort to eliminate food waste, Munch has partnered with{" "}
                   <span className="font-medium text-foreground">city food banks and nonprofit organizations</span> so
                   that food can be donated to the <span className="font-medium text-foreground">local houseless community</span>{" "}
                   and others who need a reliable meal—not as an afterthought, but as part of how we think about a full
@@ -100,7 +100,7 @@ export default function FoodDonationPage() {
               </CardHeader>
               <CardContent className="space-y-3 text-muted-foreground">
                 <p>
-                  In The Kitchen is dedicated to serving <span className="font-medium text-foreground">all members of the community</span>
+                  Munch is dedicated to serving <span className="font-medium text-foreground">all members of the community</span>
                   —including folks going through a rough patch, or who are less fortunate than others. That dedication to
                   serving the community <span className="font-medium text-foreground">holistically</span> is how we believe
                   strong connections, trust, and familiarity grow in the places we serve.

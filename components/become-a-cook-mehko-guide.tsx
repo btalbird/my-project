@@ -70,7 +70,7 @@ export function BecomeACookMehkoGuide() {
           <ShieldCheck className="h-4 w-4" aria-hidden />
           <AlertTitle>Disclaimer</AlertTitle>
           <AlertDescription className="text-muted-foreground">
-            In The Kitchen is not a government agency. Rules, fees, menus, and enforcement differ by city and county.
+            Munch is not a government agency. Rules, fees, menus, and enforcement differ by city and county.
             Nothing here replaces your permit office or an attorney. Verify every step with the agency that issues your
             permit.
           </AlertDescription>
@@ -83,7 +83,7 @@ export function BecomeACookMehkoGuide() {
             <span className="font-medium text-foreground">Microenterprise Home Kitchen Operation</span>. It’s a
             California framework that can allow a home cook to prepare and sell meals from their primary residence. A
             permit is issued by your <span className="font-medium text-foreground">local city or county</span>{" "}
-            environmental health department—not by In The Kitchen.
+            environmental health department—not by Munch.
           </p>
           <p className="max-w-3xl text-sm text-muted-foreground">
             Availability and exact rules vary by jurisdiction. CDPH notes that cities and counties have discretion to
@@ -156,7 +156,7 @@ export function BecomeACookMehkoGuide() {
 
         <Card className="mt-6 border-2 border-border bg-card/60">
           <CardHeader>
-            <CardTitle className="font-serif text-xl">On In The Kitchen</CardTitle>
+            <CardTitle className="font-serif text-xl">On Munch</CardTitle>
             <CardDescription>More reading elsewhere on the site.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
