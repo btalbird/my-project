@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ulimit -n 8192 && WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -H 127.0.0.1 -p 3002",
-    "dev:3001": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -p 3001 -H 127.0.0.1",
-    "dev:3002": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -p 3002 -H 127.0.0.1",
+    "dev": "ulimit -n 8192 && WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -p 3002",
+    "dev:3001": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -p 3001",
+    "dev:3002": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -p 3002",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node ./scripts/seed.mjs",
     "build": "node ./scripts/build.mjs",
