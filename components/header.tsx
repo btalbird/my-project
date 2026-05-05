@@ -56,7 +56,7 @@ export function Header() {
               <Leaf className="w-5 h-5 text-primary" />
             </div>
             <div className="hidden sm:block">
-              <span className="text-lg font-serif font-bold text-foreground">munch</span>
+              <span className="text-lg font-serif font-bold text-foreground">Munch</span>
               <p className="text-xs text-muted-foreground -mt-0.5">Nourishing Community</p>
             </div>
             <span className="sr-only">Go to home page</span>
@@ -105,6 +105,9 @@ export function Header() {
               <DropdownMenuContent align="end" className="w-48">
                 {signedIn ? (
                   <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/member">Member portal</Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/orders">My Orders</Link>
                     </DropdownMenuItem>
@@ -176,6 +179,12 @@ export function Header() {
             </Link>
             {signedIn ? (
               <>
+                <Link
+                  href="/member"
+                  className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
+                >
+                  Member portal
+                </Link>
                 <Link
                   href="/orders"
                   className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"

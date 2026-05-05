@@ -48,7 +48,7 @@ export function SignUpForm() {
                   setError(typeof data.error === "string" ? data.error : "Sign up failed")
                   return
                 }
-                router.push("/")
+                router.push("/member")
                 router.refresh()
               } finally {
                 setPending(false)

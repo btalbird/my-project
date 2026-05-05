@@ -18,7 +18,7 @@ const footerLinks = {
     { label: "What is MEHKO", href: "/promos/2" },
     { label: "See County List", href: "/for-cooks/mehko-counties" },
     { label: "Get Permitted", href: "/for-cooks/become-a-cook" },
-    { label: "Bring munch to your Neighborhood", href: "/for-cooks/bring-itk-to-your-neighborhood" },
+    { label: "Bring Munch to your Neighborhood", href: "/for-cooks/bring-itk-to-your-neighborhood" },
   ],
   support: [
     { label: "Help Center", href: "/support/help-center" },
@@ -47,7 +47,7 @@ export function Footer() {
                 <Leaf className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <span className="text-lg font-serif font-bold text-foreground">munch</span>
+                <span className="text-lg font-serif font-bold text-foreground">Munch</span>
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
@@ -127,7 +127,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t-2 border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} munch. Made with love for our community.
+            © {new Date().getFullYear()} Munch. Made with love for our community.
           </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link href="/legal/terms" className="hover:text-primary transition-colors">Terms</Link>

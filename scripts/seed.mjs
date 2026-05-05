@@ -71,6 +71,26 @@ function inferCategorySlug(r) {
   return null
 }
 
+/** Demo MEHKO kitchen locations cluster near downtown LA (~10 mi spread) for radius testing. */
+const KITCHEN_HUB_LAT = 34.0522
+const KITCHEN_HUB_LNG = -118.2437
+
+function kitchenLatLng(index, total) {
+  const golden = Math.PI * (3 - Math.sqrt(5))
+  const t = total <= 1 ? 0 : index / (total - 1)
+  const rMi = 0.25 + t * 9.5
+  const theta = index * golden
+  const miLat = rMi * Math.cos(theta)
+  const miLng = rMi * Math.sin(theta)
+  const dLat = miLat / 69
+  const dLng = miLng / (69 * Math.cos((KITCHEN_HUB_LAT * Math.PI) / 180))
+  return {
+    latitude: KITCHEN_HUB_LAT + dLat,
+    longitude: KITCHEN_HUB_LNG + dLng,
+    isMehko: true,
+  }
+}
+
 const categories = [
   "Korean",
   "Pizza",
@@ -310,8 +330,11 @@ await prisma.tag.createMany({
   skipDuplicates: true,
 })
 
-for (const r of restaurants) {
+const totalRestaurants = restaurants.length
+for (let i = 0; i < totalRestaurants; i++) {
+  const r = restaurants[i]
   const categorySlug = r.categorySlug ?? inferCategorySlug(r)
+  const { latitude, longitude, isMehko } = kitchenLatLng(i, totalRestaurants)
   await prisma.restaurant.upsert({
     where: { name: r.name },
     update: {
@@ -322,6 +345,9 @@ for (const r of restaurants) {
       deliveryTime: r.deliveryTime,
       deliveryFee: r.deliveryFee,
       promo: r.promo,
+      latitude,
+      longitude,
+      isMehko,
       ...(categorySlug
         ? {
             category: {
@@ -338,6 +364,9 @@ for (const r of restaurants) {
       deliveryTime: r.deliveryTime,
       deliveryFee: r.deliveryFee,
       promo: r.promo,
+      latitude,
+      longitude,
+      isMehko,
       ...(categorySlug
         ? {
             category: {
@@ -381,6 +410,19 @@ const demoUser = await prisma.user.upsert({
   where: { email: DEMO_EMAIL },
   update: { passwordHash, name: "Demo User" },
   create: { email: DEMO_EMAIL, passwordHash, name: "Demo User" },
+})
+await prisma.user.update({
+  where: { id: demoUser.id },
+  data: {
+    deliveryLine1: "200 N Spring St",
+    deliveryLine2: null,
+    deliveryCity: "Los Angeles",
+    deliveryState: "CA",
+    deliveryPostalCode: "90012",
+    deliveryLat: KITCHEN_HUB_LAT,
+    deliveryLng: KITCHEN_HUB_LNG,
+    kitchenSearchRadiusMiles: 10,
+  },
 })
 await prisma.order.deleteMany({ where: { userId: demoUser.id } })
 

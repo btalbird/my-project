@@ -15,6 +15,8 @@ interface RestaurantCardProps {
     deliveryFee: string
     /** Matches demo/DB rows where promo may be null when absent. */
     promo?: string | null
+    /** When set (e.g. member portal), shown as straight-line miles from saved home. */
+    distanceMiles?: number
   }
 }
 
@@ -97,6 +99,13 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
           </div>
         </div>
         <p className="text-sm text-muted-foreground">{restaurant.cuisine}</p>
+        {typeof restaurant.distanceMiles === "number" ? (
+          <p className="text-sm font-medium text-primary">
+            {restaurant.distanceMiles < 10
+              ? `${restaurant.distanceMiles.toFixed(1)} mi away`
+              : `${Math.round(restaurant.distanceMiles)} mi away`}
+          </p>
+        ) : null}
         <p className="text-sm text-muted-foreground">{restaurant.deliveryFee} delivery fee</p>
       </div>
     </article>

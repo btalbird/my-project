@@ -22,6 +22,11 @@ model Restaurant {
   deliveryFee  String
   promo        String?
 
+  /** Home kitchen (MEHKO) participating on the platform — used for member radius search. */
+  isMehko   Boolean @default(true)
+  latitude  Float?
+  longitude Float?
+
   categoryId Int?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
@@ -30,6 +35,8 @@ model Restaurant {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([isMehko])
 }
 
 model Category {
@@ -71,6 +78,17 @@ model User {
   email        String    @unique
   passwordHash String
   name         String?
+
+  deliveryLine1      String?
+  deliveryLine2      String?
+  deliveryCity       String?
+  deliveryState      String?
+  deliveryPostalCode String?
+  deliveryLat        Float?
+  deliveryLng        Float?
+  /** Default search radius for nearby MEHKO kitchens (miles). */
+  kitchenSearchRadiusMiles Float @default(10)
+
   orders       Order[]
   favorites    Favorite[]
   createdAt    DateTime  @default(now())
