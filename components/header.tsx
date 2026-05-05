@@ -19,17 +19,24 @@ export function Header() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userId, setUserId] = useState<string | null | undefined>(undefined)
+  const [userRole, setUserRole] = useState<string | null | undefined>(undefined)
   const cartItemCount = 3
 
   useEffect(() => {
     let cancelled = false
     fetch("/api/auth/me")
       .then((r) => r.json())
-      .then((d: { userId?: string | null }) => {
-        if (!cancelled) setUserId(d.userId ?? null)
+      .then((d: { userId?: string | null; role?: string | null }) => {
+        if (!cancelled) {
+          setUserId(d.userId ?? null)
+          setUserRole(d.role ?? null)
+        }
       })
       .catch(() => {
-        if (!cancelled) setUserId(null)
+        if (!cancelled) {
+          setUserId(null)
+          setUserRole(null)
+        }
       })
     return () => {
       cancelled = true
@@ -39,12 +46,15 @@ export function Header() {
   async function signOut() {
     await fetch("/api/auth/logout", { method: "POST" })
     setUserId(null)
+    setUserRole(null)
     setMobileMenuOpen(false)
     router.refresh()
     router.push("/")
   }
 
   const signedIn = Boolean(userId)
+  const showStaffLink = userRole === "STAFF" || userRole === "ADMIN"
+  const showAdminLink = userRole === "ADMIN"
 
   return (
     <header className="relative bg-card/95 backdrop-blur-sm border-b-2 border-border">
@@ -108,6 +118,16 @@ export function Header() {
                     <DropdownMenuItem asChild>
                       <Link href="/member">Member portal</Link>
                     </DropdownMenuItem>
+                    {showStaffLink ? (
+                      <DropdownMenuItem asChild>
+                        <Link href="/staff">Staff portal</Link>
+                      </DropdownMenuItem>
+                    ) : null}
+                    {showAdminLink ? (
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin">Admin</Link>
+                      </DropdownMenuItem>
+                    ) : null}
                     <DropdownMenuItem asChild>
                       <Link href="/orders">My Orders</Link>
                     </DropdownMenuItem>
@@ -185,6 +205,22 @@ export function Header() {
                 >
                   Member portal
                 </Link>
+                {showStaffLink ? (
+                  <Link
+                    href="/staff"
+                    className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
+                  >
+                    Staff portal
+                  </Link>
+                ) : null}
+                {showAdminLink ? (
+                  <Link
+                    href="/admin"
+                    className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
+                  >
+                    Admin
+                  </Link>
+                ) : null}
                 <Link
                   href="/orders"
                   className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"

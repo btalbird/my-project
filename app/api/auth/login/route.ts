@@ -1,8 +1,11 @@
 import bcrypt from "bcryptjs"
 import { NextResponse } from "next/server"
 
+import { isEmailInAdminAllowlist } from "@/lib/admin-allowlist"
 import { prisma } from "@/lib/db"
 import { SESSION_COOKIE } from "@/lib/session"
+
+export const dynamic = "force-dynamic"
 
 export async function POST(req: Request) {
   let body: { email?: string; password?: string; remember?: boolean }
@@ -24,10 +27,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
   }
 
+  let sessionUser = user
+  if (isEmailInAdminAllowlist(email) && user.role !== "ADMIN") {
+    sessionUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { role: "ADMIN" },
+    })
+  }
+
   const maxAge = body.remember === false ? 60 * 60 * 24 : 60 * 60 * 24 * 30
 
-  const res = NextResponse.json({ ok: true, userId: user.id })
-  res.cookies.set(SESSION_COOKIE, user.id, {
+  const res = NextResponse.json({
+    ok: true,
+    userId: sessionUser.id,
+    role: sessionUser.role,
+  })
+  res.cookies.set(SESSION_COOKIE, sessionUser.id, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",

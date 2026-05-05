@@ -7,6 +7,8 @@ const SESSION_COOKIE = "itk_uid"
 function needsAuth(pathname: string) {
   if (pathname === "/orders" || pathname.startsWith("/orders/")) return true
   if (pathname === "/member" || pathname.startsWith("/member/")) return true
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return true
+  if (pathname === "/staff" || pathname.startsWith("/staff/")) return true
   return false
 }
 
@@ -25,5 +27,14 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/orders", "/orders/:path*", "/member", "/member/:path*"],
+  matcher: [
+    "/orders",
+    "/orders/:path*",
+    "/member",
+    "/member/:path*",
+    "/admin",
+    "/admin/:path*",
+    "/staff",
+    "/staff/:path*",
+  ],
 }

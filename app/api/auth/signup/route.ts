@@ -1,9 +1,12 @@
 import bcrypt from "bcryptjs"
-import { NextResponse } from "next/server"
 import { Prisma } from "@prisma/client"
+import { NextResponse } from "next/server"
 
+import { isEmailInAdminAllowlist } from "@/lib/admin-allowlist"
 import { prisma } from "@/lib/db"
 import { SESSION_COOKIE } from "@/lib/session"
+
+export const dynamic = "force-dynamic"
 
 const MIN_PASSWORD = 8
 
@@ -37,7 +40,12 @@ export async function POST(req: Request) {
   let user
   try {
     user = await prisma.user.create({
-      data: { email, passwordHash, name },
+      data: {
+        email,
+        passwordHash,
+        name,
+        ...(isEmailInAdminAllowlist(email) ? { role: "ADMIN" } : {}),
+      },
     })
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
@@ -46,7 +54,7 @@ export async function POST(req: Request) {
     throw err
   }
 
-  const res = NextResponse.json({ ok: true, userId: user.id })
+  const res = NextResponse.json({ ok: true, userId: user.id, role: user.role })
   res.cookies.set(SESSION_COOKIE, user.id, {
     httpOnly: true,
     sameSite: "lax",

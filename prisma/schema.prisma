@@ -12,6 +12,12 @@ enum TagType {
   trait
 }
 
+enum UserRole {
+  MEMBER
+  STAFF
+  ADMIN
+}
+
 model Restaurant {
   id           Int       @id @default(autoincrement())
   name         String    @unique
@@ -78,6 +84,7 @@ model User {
   email        String    @unique
   passwordHash String
   name         String?
+  role         UserRole  @default(MEMBER)
 
   deliveryLine1      String?
   deliveryLine2      String?
