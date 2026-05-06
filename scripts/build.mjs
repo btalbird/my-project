@@ -30,4 +30,7 @@ See .env.example for the Supabase connection string shape.
   run("prisma migrate deploy")
 }
 
+// Always regenerate client from the checked-in schema (Vercel build cache can leave a stale @prisma/client).
+run("prisma generate")
+
 run("next build")
