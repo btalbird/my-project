@@ -25,6 +25,3 @@ export function isAdminRole(role: UserRole): boolean {
   return role === "ADMIN"
 }
 
-export function canAccessStaffPortal(role: UserRole): boolean {
-  return role === "ADMIN" || role === "STAFF"
-}

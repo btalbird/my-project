@@ -22,10 +22,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             Admin
           </Link>
           <span aria-hidden>·</span>
-          <Link href="/staff" className="hover:text-foreground hover:underline">
-            Staff portal
-          </Link>
-          <span aria-hidden>·</span>
           <Link href="/member" className="hover:text-foreground hover:underline">
             Member portal
           </Link>

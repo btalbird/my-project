@@ -13,13 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SearchBar } from "./search-bar"
-import type { PublicBrandHeader } from "@/lib/brand-theme"
 
-type HeaderProps = {
-  brand?: PublicBrandHeader | null
-}
-
-export function Header({ brand }: HeaderProps) {
+export function Header() {
   const router = useRouter()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -58,12 +53,11 @@ export function Header({ brand }: HeaderProps) {
   }
 
   const signedIn = Boolean(userId)
-  const showStaffLink = userRole === "STAFF" || userRole === "ADMIN"
   const showAdminLink = userRole === "ADMIN"
 
-  const wordmark = brand?.wordmark ?? "Munch"
-  const tagline = brand?.tagline ?? "Nourishing Community"
-  const logoUrl = brand?.logoUrl ?? null
+  const wordmark = "Munch"
+  const tagline = "Nourishing Community"
+  const logoUrl: string | null = null
 
   return (
     <header className="relative bg-card/95 backdrop-blur-sm border-b-2 border-border">
@@ -132,11 +126,6 @@ export function Header({ brand }: HeaderProps) {
                     <DropdownMenuItem asChild>
                       <Link href="/member">Member portal</Link>
                     </DropdownMenuItem>
-                    {showStaffLink ? (
-                      <DropdownMenuItem asChild>
-                        <Link href="/staff">Staff portal</Link>
-                      </DropdownMenuItem>
-                    ) : null}
                     {showAdminLink ? (
                       <DropdownMenuItem asChild>
                         <Link href="/admin">Admin</Link>
@@ -219,14 +208,6 @@ export function Header({ brand }: HeaderProps) {
                 >
                   Member portal
                 </Link>
-                {showStaffLink ? (
-                  <Link
-                    href="/staff"
-                    className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
-                  >
-                    Staff portal
-                  </Link>
-                ) : null}
                 {showAdminLink ? (
                   <Link
                     href="/admin"
