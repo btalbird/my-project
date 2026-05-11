@@ -8,12 +8,23 @@ export default function StaffHomePage() {
       <div>
         <h1 className="font-serif text-3xl font-bold tracking-tight">Staff portal</h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
-          Update how restaurants appear on the site: names, hero images, cuisine labels, ratings, delivery copy, and promos.
+          Update how the storefront looks and reads: listings, pages, and design assets.
         </p>
       </div>
-      <Button asChild>
-        <Link href="/staff/restaurants">Edit restaurants</Link>
-      </Button>
+      <div className="flex flex-wrap gap-3">
+        <Button asChild>
+          <Link href="/staff/restaurants">Edit restaurants</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/staff/designs">Design assets</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/staff/pages">Site pages</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/staff/branding">Branding</Link>
+        </Button>
+      </div>
     </div>
   )
 }

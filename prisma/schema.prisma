@@ -18,6 +18,17 @@ enum UserRole {
   ADMIN
 }
 
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum AssetKind {
+  DESIGN_EXPORT_PNG
+  DESIGN_SOURCE_SVG
+  UPLOAD_IMAGE
+}
+
 model Restaurant {
   id           Int       @id @default(autoincrement())
   name         String    @unique
@@ -98,8 +109,132 @@ model User {
 
   orders       Order[]
   favorites    Favorite[]
+  assets       Asset[]
+  designs      DesignDocument[]
+  pages        Page[]
+  pageVersions PageVersion[]
+  auditLogs    AuditLog[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+}
+
+model Asset {
+  id              String    @id @default(cuid())
+  kind            AssetKind
+  url             String
+  contentType     String?
+  width           Int?
+  height          Int?
+  storageProvider String
+  storageKey      String?
+
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  designPublishedFor DesignDocument? @relation("PublishedDesignAsset")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdById])
+  @@index([kind])
+}
+
+model DesignDocument {
+  id     String        @id @default(cuid())
+  name   String
+  status ContentStatus @default(DRAFT)
+
+  /** JSON source of truth for the design editor. */
+  draftJson Json
+
+  /** Optional published asset (immutable output). */
+  publishedAssetId String? @unique
+  publishedAsset   Asset?  @relation("PublishedDesignAsset", fields: [publishedAssetId], references: [id], onDelete: SetNull)
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdById])
+  @@index([status])
+}
+
+model Page {
+  id     String        @id @default(cuid())
+  title  String
+  slug   String        @unique
+  status ContentStatus @default(DRAFT)
+
+  /** Draft content edited in staff portal. */
+  draftSections Json
+
+  publishedVersionId String? @unique
+  publishedVersion   PageVersion? @relation("PublishedPageVersion", fields: [publishedVersionId], references: [id], onDelete: SetNull)
+
+  versions PageVersion[]
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdById])
+  @@index([status])
+}
+
+model PageVersion {
+  id      String   @id @default(cuid())
+  pageId  String
+  version Int
+  sections Json
+
+  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  publishedFor Page? @relation("PublishedPageVersion")
+
+  createdAt DateTime @default(now())
+
+  @@unique([pageId, version])
+  @@index([pageId])
+  @@index([createdById])
+}
+
+model AuditLog {
+  id         String @id @default(cuid())
+  actorUserId String
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+
+  actor User @relation(fields: [actorUserId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([actorUserId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+
+/** Singleton row id must be `site` — site-wide brand tokens and header copy. */
+model SiteTheme {
+  id String @id
+
+  draftJson     Json
+  publishedJson Json?
+
+  status ContentStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Favorite {

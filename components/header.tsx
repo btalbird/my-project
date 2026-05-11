@@ -13,8 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SearchBar } from "./search-bar"
+import type { PublicBrandHeader } from "@/lib/brand-theme"
 
-export function Header() {
+type HeaderProps = {
+  brand?: PublicBrandHeader | null
+}
+
+export function Header({ brand }: HeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -56,18 +61,27 @@ export function Header() {
   const showStaffLink = userRole === "STAFF" || userRole === "ADMIN"
   const showAdminLink = userRole === "ADMIN"
 
+  const wordmark = brand?.wordmark ?? "Munch"
+  const tagline = brand?.tagline ?? "Nourishing Community"
+  const logoUrl = brand?.logoUrl ?? null
+
   return (
     <header className="relative bg-card/95 backdrop-blur-sm border-b-2 border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-10 h-10 bg-primary/10 border-2 border-primary/30 rounded-full flex items-center justify-center">
-              <Leaf className="w-5 h-5 text-primary" />
-            </div>
+            {logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoUrl} alt="" className="h-10 w-auto max-w-[160px] object-contain" />
+            ) : (
+              <div className="w-10 h-10 bg-primary/10 border-2 border-primary/30 rounded-full flex items-center justify-center">
+                <Leaf className="w-5 h-5 text-primary" />
+              </div>
+            )}
             <div className="hidden sm:block">
-              <span className="text-lg font-serif font-bold text-foreground">Munch</span>
-              <p className="text-xs text-muted-foreground -mt-0.5">Nourishing Community</p>
+              <span className="text-lg font-serif font-bold text-foreground">{wordmark}</span>
+              <p className="text-xs text-muted-foreground -mt-0.5">{tagline}</p>
             </div>
             <span className="sr-only">Go to home page</span>
           </Link>

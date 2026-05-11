@@ -19,9 +19,19 @@ const pg = new EmbeddedPostgres({
   persistent: true,
 })
 
-await pg.initialise()
+try {
+  await pg.initialise()
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err)
+  if (!msg.includes("exists but is not empty")) throw err
+}
 await pg.start()
-await pg.createDatabase("in_the_kitchen")
+try {
+  await pg.createDatabase("in_the_kitchen")
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err)
+  if (!msg.includes('database "in_the_kitchen" already exists')) throw err
+}
 
 console.log("Postgres ready")
 console.log(`port=${port}`)

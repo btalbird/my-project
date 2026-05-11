@@ -2,7 +2,9 @@
   "name": "my-project",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.33.1",
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "ulimit -n 8192 && WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -p 3002",
     "dev:3001": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -p 3001",
     "dev:3002": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 next dev -p 3002",
@@ -42,7 +44,9 @@
     "@radix-ui/react-toggle": "1.1.10",
     "@radix-ui/react-toggle-group": "1.1.11",
     "@radix-ui/react-tooltip": "1.2.8",
+    "@resvg/resvg-js": "^2.6.2",
     "@vercel/analytics": "1.6.1",
+    "@vercel/blob": "^2.3.3",
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
@@ -51,6 +55,7 @@
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.6.0",
     "input-otp": "1.4.2",
+    "konva": "^10.3.0",
     "lucide-react": "^0.564.0",
     "next": "16.2.0",
     "next-themes": "^0.4.6",
@@ -60,6 +65,7 @@
     "react-day-picker": "9.13.2",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.54.1",
+    "react-konva": "^19.2.4",
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
     "sonner": "^1.7.1",
@@ -68,7 +74,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4.2.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^22",

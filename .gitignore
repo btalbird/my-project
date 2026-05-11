@@ -18,6 +18,7 @@ next.user-config.*
 tsconfig.tsbuildinfo
 
 # Common ignores
+.pnpm-store/
 node_modules
 .next/
 .DS_Store

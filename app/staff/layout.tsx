@@ -21,6 +21,26 @@ export default async function StaffLayout({ children }: { children: React.ReactN
           <Link href="/staff" className="font-medium text-foreground hover:underline">
             Staff
           </Link>
+          <span aria-hidden>·</span>
+          <Link href="/staff/restaurants" className="hover:text-foreground hover:underline">
+            Restaurants
+          </Link>
+          <span aria-hidden>·</span>
+          <Link href="/staff/designs" className="hover:text-foreground hover:underline">
+            Designs
+          </Link>
+          <span aria-hidden>·</span>
+          <Link href="/staff/pages" className="hover:text-foreground hover:underline">
+            Pages
+          </Link>
+          <span aria-hidden>·</span>
+          <Link href="/staff/branding" className="hover:text-foreground hover:underline">
+            Branding
+          </Link>
+          <span aria-hidden>·</span>
+          <Link href="/staff/activity" className="hover:text-foreground hover:underline">
+            Activity
+          </Link>
           {isAdminRole(user.role) ? (
             <>
               <span aria-hidden>·</span>

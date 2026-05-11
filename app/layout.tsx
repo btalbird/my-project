@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 
 import { Header } from '@/components/header'
+import { PublishedThemeStyle } from '@/components/published-theme-style'
+import { getPublishedSiteBranding } from '@/lib/site-theme'
 import './globals.css'
 
 const geistSans = Geist({
@@ -28,18 +30,21 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const branding = await getPublishedSiteBranding()
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} bg-background`}
     >
       <body className="font-sans antialiased bg-background">
-        <Header />
+        <PublishedThemeStyle css={branding?.css ?? ''} />
+        <Header brand={branding?.header} />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
