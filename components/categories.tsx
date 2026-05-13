@@ -15,7 +15,7 @@ const categories = [
   { id: 7, name: "Italian", icon: "🍝", color: "bg-rose-50" },
   { id: 8, name: "Desserts", icon: "🍰", color: "bg-purple-50" },
   { id: 9, name: "Healthy", icon: "🥗", color: "bg-emerald-50" },
-  { id: 10, name: "Breakfast", icon: "🥞", color: "bg-blue-50" },
+  { id: 10, name: "Breakfast", icon: "🥞", color: "bg-secondary/60" },
   { id: 11, name: "Coffee", icon: "☕", color: "bg-stone-50" },
   { id: 12, name: "Seafood", icon: "🦐", color: "bg-cyan-50" },
 ]

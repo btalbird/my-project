@@ -1,18 +1,27 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Fraunces, Geist_Mono, Inclusive_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 
 import { Header } from '@/components/header'
 import './globals.css'
 
-const geistSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans',
+const inclusiveSans = Inclusive_Sans({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-inclusive-sans',
+  weight: 'variable',
+})
+
+/** Display serif fallback until `public/fonts/roca-one.woff2` (Roca One) is added. */
+const headingFallback = Fraunces({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-heading-fallback',
+  weight: 'variable',
+  axes: ['SOFT', 'WONK', 'opsz'],
 })
 
 const geistMono = Geist_Mono({
   subsets: ['latin'],
-  variable: '--font-mono',
+  variable: '--font-geist-mono',
 })
 
 export const metadata: Metadata = {
@@ -36,7 +45,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} bg-background`}
+      className={`${inclusiveSans.variable} ${headingFallback.variable} ${geistMono.variable} bg-background`}
     >
       <body className="font-sans antialiased bg-background">
         <Header />

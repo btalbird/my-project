@@ -25,7 +25,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
 
   return (
     <article className="group">
-      <div className="relative overflow-hidden rounded-2xl bg-secondary aspect-[4/3]">
+      <div className="relative overflow-hidden rounded-2xl bg-secondary aspect-[4/3] ring-2 ring-transparent transition-colors duration-200 group-hover:ring-[#f4e9c6]">
         {/* Restaurant Image */}
         <Link
           href={`/restaurants/${restaurant.id}`}
@@ -89,7 +89,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
         <div className="flex items-start justify-between gap-2">
           <Link
             href={`/restaurants/${restaurant.id}`}
-            className="font-semibold text-foreground text-lg group-hover:text-primary transition-colors"
+            className="font-semibold text-primary-foreground text-lg group-hover:text-primary-foreground/80 transition-colors"
           >
             {restaurant.name}
           </Link>
@@ -98,7 +98,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
             <span className="text-sm font-medium text-foreground">{restaurant.rating}</span>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground">{restaurant.cuisine}</p>
+        <p className="text-sm text-primary-foreground/85">{restaurant.cuisine}</p>
         {typeof restaurant.distanceMiles === "number" ? (
           <p className="text-sm font-medium text-primary">
             {restaurant.distanceMiles < 10
@@ -106,7 +106,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
               : `${Math.round(restaurant.distanceMiles)} mi away`}
           </p>
         ) : null}
-        <p className="text-sm text-muted-foreground">{restaurant.deliveryFee} delivery fee</p>
+        <p className="text-sm text-primary-foreground/85">{restaurant.deliveryFee} delivery fee</p>
       </div>
     </article>
   )

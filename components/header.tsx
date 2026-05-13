@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { MapPin, ShoppingCart, User, Menu, X, Leaf } from "lucide-react"
+import { MapPin, ShoppingCart, User, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -55,27 +55,29 @@ export function Header() {
   const signedIn = Boolean(userId)
   const showAdminLink = userRole === "ADMIN"
 
-  const wordmark = "Munch"
   const tagline = "Nourishing Community"
-  const logoUrl: string | null = null
+  const brandLogoSrc = "/brand/munch-logo.png"
+
+  if (pathname === "/") {
+    return null
+  }
 
   return (
-    <header className="relative bg-card/95 backdrop-blur-sm border-b-2 border-border">
+    <header className="relative z-50 border-b-2 border-border bg-card/95 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            {logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={logoUrl} alt="" className="h-10 w-auto max-w-[160px] object-contain" />
-            ) : (
-              <div className="w-10 h-10 bg-primary/10 border-2 border-primary/30 rounded-full flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-primary" />
-              </div>
-            )}
-            <div className="hidden sm:block">
-              <span className="text-lg font-serif font-bold text-foreground">{wordmark}</span>
-              <p className="text-xs text-muted-foreground -mt-0.5">{tagline}</p>
+          <Link href="/" className="flex items-center gap-3 shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element -- brand asset from /public */}
+            <img
+              src={brandLogoSrc}
+              alt="Munch"
+              width={904}
+              height={389}
+              className="h-10 w-auto max-w-[min(260px,52vw)] object-contain object-left sm:h-11 sm:max-w-[min(300px,48vw)]"
+            />
+            <div className="hidden sm:block leading-tight">
+              <p className="text-xs text-muted-foreground max-w-[10rem]">{tagline}</p>
             </div>
             <span className="sr-only">Go to home page</span>
           </Link>
@@ -189,7 +191,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t-2 border-border py-4 space-y-3">
+          <div className="lg:hidden border-t-2 border-border bg-card/98 py-4 text-foreground backdrop-blur-sm space-y-3">
             <Link
               href="/delivery"
               className="flex items-center gap-2 px-3 py-2 w-full rounded-lg hover:bg-secondary transition-colors"

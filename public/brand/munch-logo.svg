@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 72" role="img" aria-labelledby="munchLogoTitle">
+  <title id="munchLogoTitle">Munch</title>
+  <path
+    fill="#d84625"
+    d="M12 36c0-14 10-26 24-28 4-8 14-14 26-14h116c12 0 22 6 26 14 14 2 24 14 24 28s-10 26-24 28c-4 8-14 14-26 14H62c-12 0-22-6-26-14C22 62 12 50 12 36Z"
+  />
+  <text
+    x="120"
+    y="44"
+    text-anchor="middle"
+    fill="#faf6eb"
+    font-family="ui-rounded, system-ui, -apple-system, Segoe UI, sans-serif"
+    font-size="26"
+    font-weight="800"
+    letter-spacing="0.04em"
+  >MUNCH</text>
+</svg>

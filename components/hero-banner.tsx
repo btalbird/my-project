@@ -1,62 +1,103 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Clock } from "lucide-react"
+import { useState } from "react"
+import { MapPin } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+import { Button } from "@/components/ui/button"
+
+const DELIVERY_ADDRESS_KEY = "munch_delivery_address"
 
 export function HeroBanner() {
+  const router = useRouter()
+  const [address, setAddress] = useState("")
+
+  function goToRestaurants() {
+    const trimmed = address.trim()
+    if (trimmed) {
+      try {
+        sessionStorage.setItem(DELIVERY_ADDRESS_KEY, trimmed)
+      } catch {
+        /* ignore quota / private mode */
+      }
+    }
+    router.push("/restaurants")
+  }
+
   return (
-    <section className="relative bg-gradient-to-r from-primary to-primary/80 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div className="text-primary-foreground space-y-6">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-              <span className="text-sm font-medium">Fees waived on your first order</span>
+    <section
+      aria-labelledby="home-hero-heading"
+      className="relative flex min-h-[100dvh] flex-col items-center justify-center bg-primary px-4 py-16 text-center text-primary-foreground sm:px-6"
+    >
+      <Link
+        href="/"
+        className="absolute left-4 top-4 z-10 rounded-xl bg-primary-foreground/95 px-2 py-1.5 shadow-sm ring-1 ring-white/40 sm:left-6 sm:top-6 lg:left-8 lg:top-8"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- static PNG from /public */}
+        <img
+          src="/brand/munch-logo.png"
+          alt="Munch"
+          width={904}
+          height={389}
+          className="h-9 w-auto max-w-[min(200px,55vw)] object-contain object-left sm:h-10 sm:max-w-[240px]"
+        />
+      </Link>
+      <div className="mx-auto flex w-full max-w-2xl flex-col items-center space-y-8">
+        <div className="space-y-3">
+          <h1
+            id="home-hero-heading"
+            className="text-balance text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl lg:text-6xl"
+          >
+            Discover home cooked meals
+          </h1>
+          <p className="text-pretty text-lg font-medium leading-snug text-primary-foreground/90 sm:text-xl md:text-2xl">
+            Made by neighbors, for neighbors.
+          </p>
+        </div>
+
+        <div className="w-full space-y-4">
+          <label htmlFor="hero-delivery-address" className="sr-only">
+            Delivery address
+          </label>
+          <div className="mx-auto flex w-full max-w-xl flex-col gap-3 sm:max-w-2xl sm:flex-row sm:items-stretch sm:rounded-full sm:bg-primary-foreground sm:p-1.5 sm:shadow-md">
+            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-primary-foreground px-4 py-3 shadow-sm ring-offset-2 ring-offset-primary focus-within:ring-2 focus-within:ring-primary/40 sm:shadow-none sm:ring-offset-0 sm:focus-within:ring-0">
+              <MapPin className="size-5 shrink-0 text-foreground" aria-hidden />
+              <input
+                id="hero-delivery-address"
+                type="text"
+                autoComplete="street-address"
+                placeholder="Enter delivery address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault()
+                    goToRestaurants()
+                  }
+                }}
+                className="min-w-0 flex-1 border-0 bg-transparent text-left text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
+              />
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-balance">
-              Home-cooked meals, made by and for your community
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/90 max-w-md">
-              Order from 1000+ MEHKO Certified Restaurants, and get your favorite comfort meal. Pick up, or select delivery where available
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button asChild size="lg" className="bg-card text-foreground hover:bg-card/90 font-semibold">
-                <Link href="/restaurants">Order Now</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-2 border-white/30 bg-transparent text-primary-foreground hover:bg-white/10 font-semibold"
-              >
-                <Link href="/restaurants">View Restaurants</Link>
-              </Button>
-            </div>
-            <div className="flex items-center gap-6 pt-4">
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5" />
-                <span className="text-sm">30 min delivery where available</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🚗💨</span>
-                <span className="text-sm">Track your order</span>
-              </div>
-            </div>
+            <Button
+              type="button"
+              onClick={() => goToRestaurants()}
+              className="h-12 shrink-0 rounded-full bg-foreground px-6 font-semibold text-background hover:bg-foreground/90 sm:h-auto sm:self-stretch sm:px-8"
+            >
+              View restaurants
+            </Button>
           </div>
-          <div className="hidden md:flex justify-center">
-            <div className="relative w-80 h-80">
-              <div className="absolute inset-0 bg-white/10 rounded-full animate-pulse" />
-              <div className="absolute inset-4 bg-white/20 rounded-full flex items-center justify-center">
-                <span className="text-9xl">🍔</span>
-              </div>
-            </div>
-          </div>
+
+          <p>
+            <Link
+              href="/signin"
+              className="text-sm text-primary-foreground/90 underline underline-offset-4 hover:text-primary-foreground focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground"
+            >
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
-      
-      {/* Decorative elements */}
-      <div className="absolute top-10 right-10 w-20 h-20 bg-white/10 rounded-full blur-xl" />
-      <div className="absolute bottom-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
     </section>
   )
 }

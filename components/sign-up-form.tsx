@@ -113,7 +113,7 @@ export function SignUpForm() {
             <Button
               type="submit"
               disabled={!agree || pending}
-              className="w-44 rounded-full bg-sky-300/80 text-sky-950 hover:bg-sky-300 disabled:opacity-60"
+              className="w-44 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
             >
               {pending ? "Creating…" : "Sign up"}
             </Button>
@@ -129,9 +129,9 @@ export function SignUpForm() {
       </div>
 
       <div className="hidden lg:flex lg:items-center">
-        <div className="relative w-full overflow-hidden rounded-3xl border-2 border-border bg-white">
+        <div className="relative w-full overflow-hidden rounded-3xl border-2 border-border bg-card">
           <div
-            className="flex w-full items-center justify-center p-6 text-center text-sm font-medium text-black"
+            className="flex w-full items-center justify-center p-6 text-center text-sm font-medium text-foreground"
             style={{ aspectRatio: "900 / 700" }}
           >
             Graphic placeholder

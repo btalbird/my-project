@@ -1,82 +1,99 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Optional: add licensed `public/fonts/roca-one.woff2` for Roca One (not on Google Fonts). */
+@font-face {
+  font-family: 'Roca One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/roca-one.woff2') format('woff2');
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.98 0.01 230);
-  --foreground: oklch(0.20 0.04 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.20 0.04 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.04 240);
-  --primary: oklch(0.50 0.14 245);
-  --primary-foreground: oklch(0.98 0.01 230);
-  --secondary: oklch(0.94 0.03 230);
-  --secondary-foreground: oklch(0.25 0.05 240);
-  --muted: oklch(0.92 0.03 230);
-  --muted-foreground: oklch(0.45 0.05 240);
-  --accent: oklch(0.55 0.12 235);
-  --accent-foreground: oklch(0.98 0.01 230);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.04 230);
-  --input: oklch(0.88 0.04 230);
-  --ring: oklch(0.50 0.14 245);
-  --chart-1: oklch(0.55 0.15 240);
-  --chart-2: oklch(0.50 0.14 245);
-  --chart-3: oklch(0.45 0.12 235);
-  --chart-4: oklch(0.40 0.10 230);
-  --chart-5: oklch(0.35 0.08 225);
+  /*
+   * Brand primaries (UI “hero” hues): rust red, periwinkle, dark green.
+   * Brand secondaries (supporting): yellow-beige surfaces + cool brown type.
+   */
+  --background: #f4e9c6;
+  --foreground: #665339;
+  --card: #fffdf8;
+  --card-foreground: #665339;
+  --popover: #fffdf8;
+  --popover-foreground: #665339;
+  --primary: #d84625;
+  --primary-foreground: #faf6eb;
+  /* Secondary = beige / cream surface; type = cool brown */
+  --secondary: #ebe3d4;
+  --secondary-foreground: #665339;
+  --muted: #e5dcc8;
+  --muted-foreground: color-mix(in srgb, #665339 72%, #f4e9c6);
+  /* Accent = periwinkle; on-accent type = dark green */
+  --accent: #becef8;
+  --accent-foreground: #566129;
+  --destructive: #b42318;
+  --destructive-foreground: #faf6eb;
+  --border: color-mix(in srgb, #665339 22%, #f4e9c6);
+  --input: color-mix(in srgb, #665339 18%, #f4e9c6);
+  --ring: #d84625;
+  /* Charts: primary trio + brown + rust midtone */
+  --chart-1: #d84625;
+  --chart-2: #becef8;
+  --chart-3: #566129;
+  --chart-4: #665339;
+  --chart-5: #c45a3d;
   --radius: 0.625rem;
-  --sidebar: oklch(0.98 0.01 230);
-  --sidebar-foreground: oklch(0.20 0.04 240);
-  --sidebar-primary: oklch(0.50 0.14 245);
-  --sidebar-primary-foreground: oklch(0.98 0.01 230);
-  --sidebar-accent: oklch(0.94 0.03 230);
-  --sidebar-accent-foreground: oklch(0.25 0.05 240);
-  --sidebar-border: oklch(0.88 0.04 230);
-  --sidebar-ring: oklch(0.50 0.14 245);
+  --sidebar: #f0e8d4;
+  --sidebar-foreground: #665339;
+  --sidebar-primary: #d84625;
+  --sidebar-primary-foreground: #faf6eb;
+  --sidebar-accent: #becef8;
+  --sidebar-accent-foreground: #566129;
+  --sidebar-border: color-mix(in srgb, #665339 20%, #f4e9c6);
+  --sidebar-ring: #d84625;
 }
 
 .dark {
-  --background: oklch(0.18 0.04 240);
-  --foreground: oklch(0.95 0.01 230);
-  --card: oklch(0.22 0.04 240);
-  --card-foreground: oklch(0.95 0.01 230);
-  --popover: oklch(0.22 0.04 240);
-  --popover-foreground: oklch(0.95 0.01 230);
-  --primary: oklch(0.60 0.14 240);
-  --primary-foreground: oklch(0.18 0.04 240);
-  --secondary: oklch(0.28 0.05 240);
-  --secondary-foreground: oklch(0.95 0.01 230);
-  --muted: oklch(0.28 0.05 240);
-  --muted-foreground: oklch(0.65 0.05 235);
-  --accent: oklch(0.55 0.12 235);
-  --accent-foreground: oklch(0.95 0.01 230);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.32 0.05 240);
-  --input: oklch(0.32 0.05 240);
-  --ring: oklch(0.60 0.14 240);
-  --chart-1: oklch(0.60 0.14 240);
-  --chart-2: oklch(0.55 0.12 245);
-  --chart-3: oklch(0.50 0.10 235);
-  --chart-4: oklch(0.45 0.08 230);
-  --chart-5: oklch(0.65 0.15 250);
-  --sidebar: oklch(0.20 0.04 240);
-  --sidebar-foreground: oklch(0.95 0.01 230);
-  --sidebar-primary: oklch(0.60 0.14 240);
-  --sidebar-primary-foreground: oklch(0.95 0.01 230);
-  --sidebar-accent: oklch(0.28 0.05 240);
-  --sidebar-accent-foreground: oklch(0.95 0.01 230);
-  --sidebar-border: oklch(0.32 0.05 240);
-  --sidebar-ring: oklch(0.60 0.14 240);
+  --background: #1c1812;
+  --foreground: #f4e9c6;
+  --card: #2a2419;
+  --card-foreground: #f4e9c6;
+  --popover: #2a2419;
+  --popover-foreground: #f4e9c6;
+  --primary: #e86447;
+  --primary-foreground: #1c1812;
+  --secondary: #3d3528;
+  --secondary-foreground: #ebe3d4;
+  --muted: #352e22;
+  --muted-foreground: color-mix(in srgb, #f4e9c6 65%, #2a2419);
+  --accent: #8fa6d4;
+  --accent-foreground: #1a2210;
+  --destructive: #c53030;
+  --destructive-foreground: #faf6eb;
+  --border: color-mix(in srgb, #f4e9c6 16%, #1c1812);
+  --input: color-mix(in srgb, #f4e9c6 14%, #1c1812);
+  --ring: #e86447;
+  --chart-1: #e86447;
+  --chart-2: #8fa6d4;
+  --chart-3: #8faa6e;
+  --chart-4: #b8a088;
+  --chart-5: #d8866e;
+  --sidebar: #241f15;
+  --sidebar-foreground: #f4e9c6;
+  --sidebar-primary: #e86447;
+  --sidebar-primary-foreground: #1c1812;
+  --sidebar-accent: #3a4458;
+  --sidebar-accent-foreground: #dbe8c8;
+  --sidebar-border: color-mix(in srgb, #f4e9c6 14%, #1c1812);
+  --sidebar-ring: #e86447;
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: var(--font-inclusive-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Roca One', var(--font-heading-fallback), ui-serif, Georgia, 'Times New Roman', serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

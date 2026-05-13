@@ -1,6 +1,6 @@
 "use client"
 
-import { Facebook, Twitter, Instagram, Youtube, Leaf } from "lucide-react"
+import { Facebook, Twitter, Instagram, Youtube } from "lucide-react"
 import Link from "next/link"
 
 const footerLinks = {
@@ -42,13 +42,15 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Logo and Description */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-primary/10 border-2 border-primary/30 rounded-full flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <span className="text-lg font-serif font-bold text-foreground">Munch</span>
-              </div>
+            <div className="mb-4">
+              {/* eslint-disable-next-line @next/next/no-img-element -- brand asset from /public */}
+              <img
+                src="/brand/munch-logo.png"
+                alt="Munch"
+                width={904}
+                height={389}
+                className="h-12 w-auto max-w-[min(360px,85vw)] object-contain object-left sm:h-14 sm:max-w-[400px]"
+              />
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Connecting communities through wholesome, home-cooked meals made with love and fresh ingredients.
