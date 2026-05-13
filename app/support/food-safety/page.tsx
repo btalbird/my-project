@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 
+const officialSourcePillButtonClass =
+  "h-auto min-h-8 w-full items-start justify-start gap-2 rounded-full px-3 py-2 text-left text-xs font-medium leading-snug whitespace-normal [&_svg]:mt-0.5 [&_svg]:shrink-0"
+
 export default function FoodSafetyPage() {
   return (
     <div className="min-h-screen bg-background">
@@ -146,44 +149,44 @@ export default function FoodSafetyPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Button asChild variant="outline" className="justify-start rounded-full">
+                  <Button asChild variant="outline" className={officialSourcePillButtonClass}>
                     <Link
                       href="https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/MicroenterpriseHomeKitchenOperations.aspx"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       CDPH MEHKO overview
-                      <ExternalLink className="ml-2 h-4 w-4" aria-hidden />
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" className="justify-start rounded-full">
+                  <Button asChild variant="outline" className={officialSourcePillButtonClass}>
                     <Link
                       href="https://www.cdph.ca.gov/Programs/CEH/DFDCS/Pages/FDBPrograms/FoodSafetyProgram/GeneralPermitRequirementsMEHKO.aspx"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       CDPH general permit requirements (MEHKO)
-                      <ExternalLink className="ml-2 h-4 w-4" aria-hidden />
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" className="justify-start rounded-full">
+                  <Button asChild variant="outline" className={officialSourcePillButtonClass}>
                     <Link
                       href="https://ucanr.edu/sites/default/files/2020-10/338122.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       CA Retail Food Code excerpt (MEHKO chapter PDF)
-                      <ExternalLink className="ml-2 h-4 w-4" aria-hidden />
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" className="justify-start rounded-full">
+                  <Button asChild variant="outline" className={officialSourcePillButtonClass}>
                     <Link
                       href="https://www.cdph.ca.gov/Programs/CEH/DFDCS/CDPH%20Document%20Library/FDB/FoodSafetyProgram/MEHKO/EH%20Agency%20Food%20Safety%20Websites.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       Local environmental health agency links (PDF)
-                      <ExternalLink className="ml-2 h-4 w-4" aria-hidden />
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                     </Link>
                   </Button>
                 </div>

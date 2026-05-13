@@ -99,10 +99,7 @@ export default function BringItkToYourNeighborhoodPage() {
           <section className="space-y-4">
             <h2 className="font-serif text-2xl font-bold text-foreground">Where to watch &amp; how to help</h2>
             <p className="max-w-3xl text-sm text-muted-foreground">
-              The table below is intentionally small and <span className="font-medium text-foreground">easy to edit</span>
-              : our team updates the list in{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground">lib/bring-itk-expansion-watch.ts</code>
-              . Each row links to an <span className="font-medium text-foreground">official government or legislature</span>{" "}
+              Each row links to an <span className="font-medium text-foreground">official government or legislature</span>{" "}
               site so you can read primary sources, find hearings, and see what comment periods look like in your area.
             </p>
 
