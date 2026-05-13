@@ -49,7 +49,7 @@ export function HeroBanner() {
             id="home-hero-heading"
             className="text-balance text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl lg:text-6xl"
           >
-            Discover home cooked meals
+            Discover home-cooked meals
           </h1>
           <p className="text-pretty text-lg font-medium leading-snug text-primary-foreground/90 sm:text-xl md:text-2xl">
             Made by neighbors, for neighbors.
