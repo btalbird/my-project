@@ -15,6 +15,7 @@ enum TagType {
 enum UserRole {
   MEMBER
   STAFF
+  COOK
   ADMIN
 }
 
@@ -33,16 +34,30 @@ model Restaurant {
   latitude  Float?
   longitude Float?
 
+  addressLine1      String?
+  addressLine2      String?
+  addressCity       String?
+  addressState      String?
+  addressPostalCode String?
+  /** Seed/marketing kitchens excluded from live customer discovery. */
+  isDemo      Boolean @default(false)
+  isPublished Boolean @default(true)
+
   categoryId Int?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
+  ownerId String?
+  owner   User? @relation("RestaurantOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
   favorites Favorite[]
   tags      RestaurantTag[]
+  orders    Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([isMehko])
+  @@index([ownerId])
 }
 
 model Category {
@@ -96,11 +111,38 @@ model User {
   /** Default search radius for nearby MEHKO kitchens (miles). */
   kitchenSearchRadiusMiles Float @default(10)
 
-  orders    Order[]
-  favorites Favorite[]
+  orders           Order[]
+  favorites        Favorite[]
+  ownedRestaurants Restaurant[]     @relation("RestaurantOwner")
+  cookSubscription CookSubscription?
+  cookConnect      CookConnect?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CookConnect {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeAccountId    String   @unique
+  chargesEnabled     Boolean  @default(false)
+  payoutsEnabled     Boolean  @default(false)
+  detailsSubmitted   Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model CookSubscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String    @unique
+  stripeSubscriptionId String?   @unique
+  status               String
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model Favorite {
@@ -115,13 +157,22 @@ model Favorite {
 }
 
 model Order {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status    String
-  items     Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int         @id @default(autoincrement())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurantId Int?
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+  status       String
+  items        Json
+  paymentStatus           String  @default("unpaid")
+  stripeCheckoutSessionId String? @unique
+  stripePaymentIntentId   String? @unique
+  amountCents             Int?
+  platformFeeCents        Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   @@index([userId])
+  @@index([restaurantId])
+  @@index([paymentStatus])
 }

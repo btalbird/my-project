@@ -5,7 +5,9 @@ const prisma = new PrismaClient()
 
 /** Default demo password; override with DEMO_USER_PASSWORD when generating a new hash. */
 const DEMO_EMAIL = "demo@munch.com"
+const DEMO_COOK_EMAIL = "cook@munch.com"
 const demoPassword = process.env.DEMO_USER_PASSWORD ?? "demo1234"
+const demoCookPassword = process.env.DEMO_COOK_PASSWORD ?? demoPassword
 
 const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
 
@@ -348,6 +350,7 @@ for (let i = 0; i < totalRestaurants; i++) {
       latitude,
       longitude,
       isMehko,
+      isDemo: true,
       ...(categorySlug
         ? {
             category: {
@@ -367,6 +370,7 @@ for (let i = 0; i < totalRestaurants; i++) {
       latitude,
       longitude,
       isMehko,
+      isDemo: true,
       ...(categorySlug
         ? {
             category: {
@@ -426,11 +430,14 @@ await prisma.user.update({
 })
 await prisma.order.deleteMany({ where: { userId: demoUser.id } })
 
+const seoulKitchen = restaurantIdByName.get("Seoul Street Kitchen")
 const now = Date.now()
+
 const demoOrders = [
   {
     userId: demoUser.id,
     status: "delivered",
+    restaurantId: seoulKitchen ?? undefined,
     items: {
       restaurant: "Seoul Street Kitchen",
       deliveryWindow: "Delivered Tue, Apr 15 · 6:22 PM",
@@ -446,6 +453,7 @@ const demoOrders = [
   {
     userId: demoUser.id,
     status: "in_transit",
+    restaurantId: restaurantIdByName.get("Mediterranean Mezze") ?? undefined,
     items: {
       restaurant: "Mediterranean Mezze",
       deliveryWindow: "Arriving today · 7:10–7:35 PM",
@@ -461,6 +469,7 @@ const demoOrders = [
   {
     userId: demoUser.id,
     status: "preparing",
+    restaurantId: restaurantIdByName.get("Bangkok Basil") ?? undefined,
     items: {
       restaurant: "Bangkok Basil",
       deliveryWindow: "Estimated arrival · 8:00–8:25 PM",
@@ -476,6 +485,7 @@ const demoOrders = [
   {
     userId: demoUser.id,
     status: "cancelled",
+    restaurantId: restaurantIdByName.get("Sweet Treats Bakery") ?? undefined,
     items: {
       restaurant: "Sweet Treats Bakery",
       deliveryWindow: "Cancelled · Apr 10",
@@ -492,7 +502,115 @@ for (const o of demoOrders) {
   await prisma.order.create({ data: o })
 }
 
-console.log("Seeded categories, tags, restaurants, tag links, demo user, and demo orders.")
+// Demo cook + kitchen assignment + cook-visible orders
+const cookPasswordHash = bcrypt.hashSync(demoCookPassword, 12)
+const demoCook = await prisma.user.upsert({
+  where: { email: DEMO_COOK_EMAIL },
+  update: { passwordHash: cookPasswordHash, name: "Demo Cook", role: "COOK" },
+  create: {
+    email: DEMO_COOK_EMAIL,
+    passwordHash: cookPasswordHash,
+    name: "Demo Cook",
+    role: "COOK",
+  },
+})
+
+if (seoulKitchen) {
+  await prisma.restaurant.updateMany({ where: { ownerId: demoCook.id }, data: { ownerId: null } })
+  await prisma.restaurant.update({
+    where: { id: seoulKitchen },
+    data: { ownerId: demoCook.id },
+  })
+}
+
+const buyerMaria = await prisma.user.upsert({
+  where: { email: "maria@example.com" },
+  update: { passwordHash: cookPasswordHash, name: "Maria Lopez" },
+  create: {
+    email: "maria@example.com",
+    passwordHash: cookPasswordHash,
+    name: "Maria Lopez",
+    role: "MEMBER",
+  },
+})
+
+const buyerJames = await prisma.user.upsert({
+  where: { email: "james@example.com" },
+  update: { passwordHash: cookPasswordHash, name: "James Chen" },
+  create: {
+    email: "james@example.com",
+    passwordHash: cookPasswordHash,
+    name: "James Chen",
+    role: "MEMBER",
+  },
+})
+
+if (seoulKitchen) {
+  await prisma.order.deleteMany({
+    where: {
+      restaurantId: seoulKitchen,
+      userId: { in: [buyerMaria.id, buyerJames.id] },
+    },
+  })
+
+  const now = Date.now()
+  const cookKitchenOrders = [
+    {
+      userId: buyerMaria.id,
+      restaurantId: seoulKitchen,
+      status: "delivered",
+      items: {
+        restaurant: "Seoul Street Kitchen",
+        deliveryWindow: "Delivered today · 12:15 PM",
+        lines: [
+          { name: "Bulgogi Bowl", qty: 2, price: "$27.98" },
+          { name: "Miso Soup", qty: 1, price: "$4.50" },
+        ],
+        total: "$32.48",
+      },
+      createdAt: new Date(now - 1000 * 60 * 60 * 3),
+    },
+    {
+      userId: buyerJames.id,
+      restaurantId: seoulKitchen,
+      status: "preparing",
+      items: {
+        restaurant: "Seoul Street Kitchen",
+        deliveryWindow: "Estimated · 7:30 PM",
+        lines: [
+          { name: "Korean Fried Chicken", qty: 1, price: "$16.99" },
+          { name: "Pickled Radish", qty: 1, price: "$3.00" },
+        ],
+        total: "$19.99",
+      },
+      createdAt: new Date(now - 1000 * 60 * 20),
+    },
+  ]
+
+  for (const o of cookKitchenOrders) {
+    await prisma.order.create({ data: o })
+  }
+}
+
+// Local dev: active listing subscription so cook dashboard stats work without Stripe webhook
+await prisma.cookSubscription.upsert({
+  where: { userId: demoCook.id },
+  update: {
+    status: "active",
+    currentPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+  },
+  create: {
+    userId: demoCook.id,
+    stripeCustomerId: `cus_seed_${demoCook.id}`,
+    stripeSubscriptionId: `sub_seed_${demoCook.id}`,
+    status: "active",
+    currentPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+  },
+})
+
+console.log(
+  "Seeded categories, tags, restaurants, tag links, demo user, demo cook (cook@munch.com), and demo orders.",
+)
 
 await prisma.$disconnect()
 

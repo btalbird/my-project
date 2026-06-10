@@ -8,6 +8,7 @@ function needsAuth(pathname: string) {
   if (pathname === "/orders" || pathname.startsWith("/orders/")) return true
   if (pathname === "/member" || pathname.startsWith("/member/")) return true
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return true
+  if (pathname.startsWith("/for-cooks/cook-dashboard")) return true
   return false
 }
 
@@ -33,5 +34,7 @@ export const config = {
     "/member/:path*",
     "/admin",
     "/admin/:path*",
+    "/for-cooks/cook-dashboard",
+    "/for-cooks/cook-dashboard/:path*",
   ],
 }

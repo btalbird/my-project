@@ -20,22 +20,30 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userId, setUserId] = useState<string | null | undefined>(undefined)
   const [userRole, setUserRole] = useState<string | null | undefined>(undefined)
+  const [deliveryLabel, setDeliveryLabel] = useState("Set delivery address")
   const cartItemCount = 3
 
   useEffect(() => {
     let cancelled = false
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((d: { userId?: string | null; role?: string | null }) => {
+    Promise.all([fetch("/api/auth/me"), fetch("/api/delivery")])
+      .then(async ([authRes, deliveryRes]) => {
+        const d = (await authRes.json()) as { userId?: string | null; role?: string | null }
+        const deliveryData = (await deliveryRes.json()) as {
+          delivery?: { snippet?: string | null; formatted?: string | null } | null
+        }
         if (!cancelled) {
           setUserId(d.userId ?? null)
           setUserRole(d.role ?? null)
+          const snippet = deliveryData.delivery?.snippet?.trim()
+          const formatted = deliveryData.delivery?.formatted?.trim()
+          setDeliveryLabel(snippet || formatted || "Set delivery address")
         }
       })
       .catch(() => {
         if (!cancelled) {
           setUserId(null)
           setUserRole(null)
+          setDeliveryLabel("Set delivery address")
         }
       })
     return () => {
@@ -54,6 +62,7 @@ export function Header() {
 
   const signedIn = Boolean(userId)
   const showAdminLink = userRole === "ADMIN"
+  const showCookDashboardLink = userRole === "COOK" || userRole === "ADMIN"
 
   const tagline = "Nourishing Community"
   const brandLogoSrc = "/brand/munch-logo.png"
@@ -90,7 +99,7 @@ export function Header() {
             <MapPin className="w-4 h-4 text-primary" />
             <div className="text-left">
               <p className="text-xs text-muted-foreground">Delivering to</p>
-              <p className="text-sm font-medium text-foreground">Your Neighborhood</p>
+              <p className="text-sm font-medium text-foreground truncate max-w-[12rem]">{deliveryLabel}</p>
             </div>
           </Link>
 
@@ -128,6 +137,11 @@ export function Header() {
                     <DropdownMenuItem asChild>
                       <Link href="/member">Member portal</Link>
                     </DropdownMenuItem>
+                    {showCookDashboardLink ? (
+                      <DropdownMenuItem asChild>
+                        <Link href="/for-cooks/cook-dashboard">Cook Dashboard</Link>
+                      </DropdownMenuItem>
+                    ) : null}
                     {showAdminLink ? (
                       <DropdownMenuItem asChild>
                         <Link href="/admin">Admin</Link>
@@ -199,7 +213,7 @@ export function Header() {
               <MapPin className="w-5 h-5 text-primary" />
               <div className="text-left">
                 <p className="text-xs text-muted-foreground">Delivering to</p>
-                <p className="text-sm font-medium text-foreground">Your Neighborhood</p>
+                <p className="text-sm font-medium text-foreground">{deliveryLabel}</p>
               </div>
             </Link>
             {signedIn ? (
@@ -210,6 +224,14 @@ export function Header() {
                 >
                   Member portal
                 </Link>
+                {showCookDashboardLink ? (
+                  <Link
+                    href="/for-cooks/cook-dashboard"
+                    className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
+                  >
+                    Cook Dashboard
+                  </Link>
+                ) : null}
                 {showAdminLink ? (
                   <Link
                     href="/admin"

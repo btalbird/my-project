@@ -4,7 +4,7 @@ import type { Order } from "@prisma/client"
 import { ArrowLeft, MapPin } from "lucide-react"
 
 import { prisma } from "@/lib/db"
-import { parseItems, statusLabel, statusVariant } from "@/lib/order-format"
+import { parseItems, paymentStatusLabel, statusLabel, statusVariant } from "@/lib/order-format"
 import { getSessionUserId } from "@/lib/session"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -70,6 +70,11 @@ export default async function OrderDetailPage({
                 {statusLabel(order.status)}
               </Badge>
             </div>
+            {order.paymentStatus && order.paymentStatus !== "paid" ? (
+              <p className="text-sm text-muted-foreground">
+                Payment: {paymentStatusLabel(order.paymentStatus)}
+              </p>
+            ) : null}
             {payload.restaurant ? (
               <p className="text-lg font-semibold text-foreground">{payload.restaurant}</p>
             ) : null}

@@ -56,7 +56,7 @@ export default function CommunityLedSpacesPage() {
                 <Link href="/support/contact-us?topic=partnerships">Partner with us</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-full">
-                <Link href="/community/our-story">Our story</Link>
+                <Link href="/community/our-story">About Munch</Link>
               </Button>
             </div>
           </div>

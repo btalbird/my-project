@@ -7,22 +7,36 @@ import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 
-const DELIVERY_ADDRESS_KEY = "munch_delivery_address"
-
 export function HeroBanner() {
   const router = useRouter()
   const [address, setAddress] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [pending, setPending] = useState(false)
 
-  function goToRestaurants() {
+  async function goToRestaurants() {
     const trimmed = address.trim()
-    if (trimmed) {
-      try {
-        sessionStorage.setItem(DELIVERY_ADDRESS_KEY, trimmed)
-      } catch {
-        /* ignore quota / private mode */
-      }
+    setError(null)
+    if (!trimmed) {
+      router.push("/restaurants")
+      return
     }
-    router.push("/restaurants")
+    setPending(true)
+    try {
+      const res = await fetch("/api/delivery", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: trimmed }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(typeof data.error === "string" ? data.error : "Could not find that address")
+        return
+      }
+      router.push("/restaurants")
+      router.refresh()
+    } finally {
+      setPending(false)
+    }
   }
 
   return (
@@ -40,7 +54,7 @@ export function HeroBanner() {
           alt="Munch"
           width={904}
           height={389}
-          className="h-9 w-auto max-w-[min(200px,55vw)] object-contain object-left sm:h-10 sm:max-w-[240px]"
+          className="h-9 w-auto max-w-[min(200px,55vw)] object-contain object-left sm:h-10 sm:max-w-[min(240px,55vw)]"
         />
       </Link>
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center space-y-8">
@@ -73,7 +87,7 @@ export function HeroBanner() {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault()
-                    goToRestaurants()
+                    void goToRestaurants()
                   }
                 }}
                 className="min-w-0 flex-1 border-0 bg-transparent text-left text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
@@ -81,12 +95,14 @@ export function HeroBanner() {
             </div>
             <Button
               type="button"
-              onClick={() => goToRestaurants()}
+              disabled={pending}
+              onClick={() => void goToRestaurants()}
               className="h-12 shrink-0 rounded-full bg-foreground px-6 font-semibold text-background hover:bg-foreground/90 sm:h-auto sm:self-stretch sm:px-8"
             >
-              View restaurants
+              {pending ? "Finding kitchens…" : "View restaurants"}
             </Button>
           </div>
+          {error ? <p className="text-sm text-primary-foreground/90">{error}</p> : null}
 
           <p>
             <Link
@@ -94,6 +110,13 @@ export function HeroBanner() {
               className="text-sm text-primary-foreground/90 underline underline-offset-4 hover:text-primary-foreground focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground"
             >
               Sign in
+            </Link>
+            <span className="mx-2 text-primary-foreground/70">·</span>
+            <Link
+              href="/delivery"
+              className="text-sm text-primary-foreground/90 underline underline-offset-4 hover:text-primary-foreground"
+            >
+              Set address with ZIP
             </Link>
           </p>
         </div>

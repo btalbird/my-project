@@ -58,11 +58,17 @@ export async function POST(req: Request) {
     ...(deliveryWindow !== undefined ? { deliveryWindow } : {}),
   }
 
+  const restaurantRow = await prisma.restaurant.findUnique({
+    where: { name: restaurant },
+    select: { id: true },
+  })
+
   const order = await prisma.order.create({
     data: {
       userId,
       status: status ?? "preparing",
       items,
+      ...(restaurantRow ? { restaurantId: restaurantRow.id } : {}),
     },
   })
 

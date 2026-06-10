@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/db"
+
+import { clampRadiusMiles } from "@/lib/delivery-address"
+import { resolveDeliveryFromRequest } from "@/lib/delivery-resolve"
+import { findNearbyLiveKitchens } from "@/lib/nearby-kitchens"
 
 export async function GET(req: Request) {
   const url = new URL(req.url)
@@ -11,36 +14,26 @@ export async function GET(req: Request) {
     .map((s) => s.trim())
     .filter(Boolean)
 
-  const andClauses =
-    tagSlugs.length > 0
-      ? tagSlugs.map((slug) => ({
-          tags: {
-            some: {
-              tag: { slug },
-            },
-          },
-        }))
-      : []
+  const delivery = await resolveDeliveryFromRequest(req)
+  if (!delivery) {
+    return NextResponse.json({
+      restaurants: [],
+      needsAddress: true,
+      radiusMiles: null,
+    })
+  }
 
-  const restaurants = await prisma.restaurant.findMany({
-    where:
-      andClauses.length || category || q
-        ? {
-            ...(category ? { category: { slug: category } } : {}),
-            ...(q
-              ? {
-                  OR: [
-                    { name: { contains: q, mode: "insensitive" } },
-                    { cuisine: { contains: q, mode: "insensitive" } },
-                  ],
-                }
-              : {}),
-            ...(andClauses.length ? { AND: andClauses } : {}),
-          }
-        : undefined,
-    orderBy: { id: "asc" },
+  const rawRadius = url.searchParams.get("radiusMiles")
+  const radiusMiles = rawRadius != null ? clampRadiusMiles(Number(rawRadius)) : delivery.radiusMiles
+  const kitchens = await findNearbyLiveKitchens(delivery.lat, delivery.lng, radiusMiles, {
+    category,
+    tagSlugs,
+    q,
   })
 
-  return NextResponse.json(restaurants)
+  return NextResponse.json({
+    restaurants: kitchens,
+    needsAddress: false,
+    radiusMiles,
+  })
 }
-

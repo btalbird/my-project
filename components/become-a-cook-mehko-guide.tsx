@@ -160,6 +160,9 @@ export function BecomeACookMehkoGuide() {
             <CardDescription>More reading elsewhere on the site.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Button asChild className="rounded-full">
+              <Link href="/for-cooks/signup">Create your cook account</Link>
+            </Button>
             <Button asChild variant="secondary" className="rounded-full">
               <Link href="/promos/2">What is MEHKO certification? (overview)</Link>
             </Button>

@@ -2,23 +2,74 @@
 
 import Link from "next/link"
 import { MapPin } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { PersonalChefCard } from "@/components/personal-chef-card"
+import { RestaurantCard } from "@/components/restaurant-card"
 import { SearchBar } from "@/components/search-bar"
 import { Button } from "@/components/ui/button"
 import type { PersonalChef } from "@/lib/neighborhood-chefs"
-import { DEFAULT_NEIGHBORHOOD_LABEL, filterChefsByQuery } from "@/lib/neighborhood-chefs"
+import { filterChefsByQuery } from "@/lib/neighborhood-chefs"
 
-type Props = {
-  chefs: PersonalChef[]
+type KitchenRow = {
+  id: number
+  name: string
+  image: string
+  cuisine: string
+  rating: number
+  deliveryTime: string
+  deliveryFee: string
+  promo?: string | null
+  distanceMiles?: number
 }
 
-export function LocalCooksPageClient({ chefs }: Props) {
-  const [query, setQuery] = useState("")
+type Props = {
+  sampleChefs: PersonalChef[]
+}
 
-  const filtered = useMemo(() => filterChefsByQuery(chefs, query), [chefs, query])
-  const total = chefs.length
+export function LocalCooksPageClient({ sampleChefs }: Props) {
+  const [query, setQuery] = useState("")
+  const [nearby, setNearby] = useState<KitchenRow[]>([])
+  const [deliveryLabel, setDeliveryLabel] = useState("Your delivery area")
+  const [needsAddress, setNeedsAddress] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([fetch("/api/kitchens/nearby"), fetch("/api/delivery")])
+      .then(async ([nearbyRes, deliveryRes]) => {
+        const nearbyData = (await nearbyRes.json()) as {
+          kitchens?: KitchenRow[]
+          needsAddress?: boolean
+        }
+        const deliveryData = (await deliveryRes.json()) as {
+          delivery?: { snippet?: string; formatted?: string } | null
+        }
+        if (cancelled) return
+        setNeedsAddress(Boolean(nearbyData.needsAddress))
+        setNearby(Array.isArray(nearbyData.kitchens) ? nearbyData.kitchens : [])
+        setDeliveryLabel(
+          deliveryData.delivery?.snippet ||
+            deliveryData.delivery?.formatted ||
+            "Your delivery area",
+        )
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const filteredSamples = useMemo(() => filterChefsByQuery(sampleChefs, query), [sampleChefs, query])
+  const filteredNearby = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return nearby
+    return nearby.filter(
+      (k) => k.name.toLowerCase().includes(q) || k.cuisine.toLowerCase().includes(q),
+    )
+  }, [nearby, query])
+
+  const totalLive = filteredNearby.length
+  const totalSamples = filteredSamples.length
 
   return (
     <main className="border-b border-border bg-gradient-to-b from-secondary/30 to-background">
@@ -41,8 +92,7 @@ export function LocalCooksPageClient({ chefs }: Props) {
               MEHKO Certified Chefs in your neighborhood
             </h1>
             <p className="text-muted-foreground">
-              Meet MEHKO Certified Chefs serving your block. Each profile lists their retail food permit and the county
-              environmental health agency that issued it, so you know who you are inviting to your table.
+              Meet MEHKO home kitchens serving near your address, sorted by distance.
             </p>
           </div>
           <div className="shrink-0 rounded-2xl border-2 border-border bg-card px-4 py-3 shadow-sm">
@@ -52,7 +102,7 @@ export function LocalCooksPageClient({ chefs }: Props) {
               </div>
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Serving near</p>
-                <p className="text-sm font-semibold text-foreground">{DEFAULT_NEIGHBORHOOD_LABEL}</p>
+                <p className="text-sm font-semibold text-foreground">{deliveryLabel}</p>
                 <Button variant="link" className="h-auto p-0 text-sm" asChild>
                   <Link href="/delivery">Update delivery address</Link>
                 </Button>
@@ -67,51 +117,44 @@ export function LocalCooksPageClient({ chefs }: Props) {
               <>
                 Showing{" "}
                 <span className="font-medium text-foreground">
-                  {filtered.length} of {total}
+                  {totalLive + totalSamples}
                 </span>{" "}
-                MEHKO Certified Chefs
-                {filtered.length === 0 ? " — try a different search." : " matching your search."}
+                results matching your search.
               </>
+            ) : needsAddress ? (
+              <>Set your delivery address to see live kitchens near you.</>
             ) : (
               <>
-                Showing <span className="font-medium text-foreground">{total}</span> MEHKO Certified Chefs permitted to
-                operate near this address.
+                <span className="font-medium text-foreground">{totalLive}</span> live kitchen
+                {totalLive === 1 ? "" : "s"} near this address.
               </>
             )}
           </p>
-          <div className="w-full sm:max-w-md sm:shrink-0">
-            <SearchBar
-              value={query}
-              onChange={setQuery}
-              placeholder="Search chefs, cuisine, permit #, or agency…"
-              aria-label="Search chefs"
-            />
+          <div className="w-full sm:max-w-md">
+            <SearchBar value={query} onChange={setQuery} placeholder="Search cooks or cuisines" />
           </div>
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Sample permit numbers and agencies are illustrative; replace with live data from your compliance feed when
-          ready.
-        </p>
 
-        {filtered.length === 0 ? (
-          <div className="mt-12 rounded-2xl border-2 border-dashed border-border bg-card/50 px-6 py-14 text-center">
-            <p className="font-medium text-foreground">No MEHKO Certified Chefs match that search</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Try a name (e.g. Marisol), a style of food (e.g. Korean), a county, or part of a permit number.
-            </p>
-            <Button type="button" variant="outline" className="mt-6 rounded-full" onClick={() => setQuery("")}>
-              Clear search
-            </Button>
-          </div>
-        ) : (
-          <ul className="mt-8 grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((chef) => (
-              <li key={chef.id}>
-                <PersonalChefCard chef={chef} />
-              </li>
+        {!needsAddress && filteredNearby.length > 0 ? (
+          <section className="mt-10">
+            <h2 className="font-serif text-xl font-bold text-foreground">Kitchens near you</h2>
+            <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredNearby.map((kitchen) => (
+                <RestaurantCard key={kitchen.id} restaurant={kitchen} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="mt-10">
+          <h2 className="font-serif text-xl font-bold text-foreground">Sample chef profiles</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Preview profiles for the local cooks experience.</p>
+          <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+            {filteredSamples.map((chef) => (
+              <PersonalChefCard key={chef.id} chef={chef} />
             ))}
-          </ul>
-        )}
+          </div>
+        </section>
       </div>
     </main>
   )

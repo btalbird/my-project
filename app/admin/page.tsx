@@ -11,13 +11,18 @@ export default async function AdminPage() {
     select: { id: true, email: true, name: true, role: true },
   })
 
+  const restaurants = await prisma.restaurant.findMany({
+    select: { id: true, name: true, ownerId: true },
+    orderBy: { name: "asc" },
+  })
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-serif text-3xl font-bold tracking-tight">Admin</h1>
         <p className="mt-1 text-muted-foreground">Signed in as {me.email}</p>
       </div>
-      <AdminUsersTable users={users} currentUserId={me.id} />
+      <AdminUsersTable users={users} currentUserId={me.id} restaurants={restaurants} />
     </div>
   )
 }

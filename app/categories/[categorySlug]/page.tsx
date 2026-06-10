@@ -1,16 +1,23 @@
+import { Footer } from "@/components/footer"
+import { CategoryPageClient } from "@/components/category-page-client"
+import { prisma } from "@/lib/db"
+
 export default async function CategoryPage({
   params,
 }: {
   params: Promise<{ categorySlug: string }>
 }) {
   const { categorySlug } = await params
+  const category = await prisma.category.findUnique({
+    where: { slug: categorySlug },
+    select: { name: true },
+  })
+  const categoryName = category?.name ?? categorySlug.replace(/-/g, " ")
+
   return (
-    <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <h1 className="text-3xl font-bold text-foreground">Category: {categorySlug}</h1>
-      <p className="text-muted-foreground mt-2">
-        This page will show restaurants filtered by category.
-      </p>
-    </main>
+    <div className="min-h-screen bg-background">
+      <CategoryPageClient categorySlug={categorySlug} categoryName={categoryName} />
+      <Footer />
+    </div>
   )
 }
-

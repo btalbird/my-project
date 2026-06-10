@@ -5,7 +5,7 @@ import Link from "next/link"
 
 const footerLinks = {
   community: [
-    { label: "Our Story", href: "/community/our-story" },
+    { label: "About Munch", href: "/community/our-story" },
     { label: "Local Cooks", href: "/community/local-cooks" },
     { label: "Community-led Spaces", href: "/community/community-events" },
     { label: "Food Donation", href: "/community/food-donation" },

@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 type Restaurant = {
@@ -13,6 +14,7 @@ type Restaurant = {
   deliveryTime: string
   deliveryFee: string
   promo?: string | null
+  distanceMiles?: number
 }
 
 type Tag = {
@@ -56,6 +58,7 @@ export function GuessWhoRestaurants({ query }: { query: string }) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
+  const [needsAddress, setNeedsAddress] = useState(false)
   const [cardStateById, setCardStateById] = useState<Record<number, CardState>>({})
 
   const pendingRemovalTimers = useRef<Map<number, { flip: number; folded: number; remove: number }>>(
@@ -136,7 +139,9 @@ export function GuessWhoRestaurants({ query }: { query: string }) {
 
     fetch(url)
       .then((r) => r.json())
-      .then((next: Restaurant[]) => {
+      .then((payload: { restaurants?: Restaurant[]; needsAddress?: boolean } | Restaurant[]) => {
+        const next = Array.isArray(payload) ? payload : (payload.restaurants ?? [])
+        setNeedsAddress(!Array.isArray(payload) && Boolean(payload.needsAddress))
         setRestaurants((prev) => {
           const nextIds = new Set(next.map((r) => r.id))
           const prevIds = new Set(prev.map((r) => r.id))
@@ -257,6 +262,23 @@ export function GuessWhoRestaurants({ query }: { query: string }) {
 
   return (
     <div className="mt-4">
+      {needsAddress ? (
+        <div className="mb-4 rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm text-muted-foreground">
+          Save your{" "}
+          <Link href="/delivery" className="font-medium text-primary hover:underline">
+            delivery address
+          </Link>{" "}
+          to see live kitchens near you sorted by distance.
+        </div>
+      ) : restaurants.length === 0 ? (
+        <div className="mb-4 rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm text-muted-foreground">
+          No live kitchens match your filters in this area. Try a wider radius on{" "}
+          <Link href="/delivery" className="font-medium text-primary hover:underline">
+            delivery settings
+          </Link>
+          .
+        </div>
+      ) : null}
       <div className="mt-3 space-y-3">
         {chipGroups.map((g) => (
           <div key={g.title} className="space-y-2">
@@ -408,6 +430,9 @@ export function GuessWhoRestaurants({ query }: { query: string }) {
                     </div>
                     <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{r.cuisine}</p>
                     <p className="text-xs text-muted-foreground mt-1">
+                      {typeof r.distanceMiles === "number"
+                        ? `${r.distanceMiles < 10 ? r.distanceMiles.toFixed(1) : Math.round(r.distanceMiles)} mi • `
+                        : ""}
                       {r.deliveryTime} • {r.deliveryFee} delivery fee
                     </p>
                     {r.promo ? (

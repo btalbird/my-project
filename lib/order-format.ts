@@ -44,8 +44,20 @@ export function statusLabel(status: string) {
     in_transit: "On the way",
     preparing: "Preparing",
     cancelled: "Cancelled",
+    pending_payment: "Awaiting payment",
   }
   return map[status] ?? status.replace(/_/g, " ")
+}
+
+export function paymentStatusLabel(status: string) {
+  const map: Record<string, string> = {
+    unpaid: "Unpaid",
+    pending: "Payment pending",
+    paid: "Paid",
+    failed: "Payment failed",
+    refunded: "Refunded",
+  }
+  return map[status] ?? status
 }
 
 export function statusVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
@@ -56,6 +68,8 @@ export function statusVariant(status: string): "default" | "secondary" | "destru
       return "default"
     case "preparing":
       return "outline"
+    case "pending_payment":
+      return "secondary"
     case "cancelled":
       return "destructive"
     default:

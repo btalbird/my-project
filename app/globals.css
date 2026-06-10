@@ -170,3 +170,14 @@
     transform: perspective(1100px) rotateX(90deg) scaleY(0.08) scale(0.97);
   }
 }
+
+@media print {
+  header,
+  [data-print-hide="true"] {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+}

@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server"
 
+import { clampRadiusMiles } from "@/lib/delivery-address"
+import { findNearbyLiveKitchens } from "@/lib/nearby-kitchens"
 import { prisma } from "@/lib/db"
-import { filterAndSortNearbyKitchens } from "@/lib/member-nearby-kitchens"
 import { getSessionUserId } from "@/lib/session"
-
-const RADIUS_MIN = 1
-const RADIUS_MAX = 50
 
 export async function GET(req: Request) {
   const userId = await getSessionUserId()
@@ -34,28 +32,10 @@ export async function GET(req: Request) {
   const raw = url.searchParams.get("radiusMiles")
   let radius = user.kitchenSearchRadiusMiles
   if (raw !== null) {
-    const n = Number(raw)
-    if (Number.isFinite(n)) radius = Math.min(RADIUS_MAX, Math.max(RADIUS_MIN, n))
+    radius = clampRadiusMiles(Number(raw))
   }
 
-  const restaurants = await prisma.restaurant.findMany({
-    where: { isMehko: true },
-    select: {
-      id: true,
-      name: true,
-      image: true,
-      cuisine: true,
-      rating: true,
-      deliveryTime: true,
-      deliveryFee: true,
-      promo: true,
-      latitude: true,
-      longitude: true,
-      isMehko: true,
-    },
-  })
-
-  const kitchens = filterAndSortNearbyKitchens(restaurants, user.deliveryLat, user.deliveryLng, radius)
+  const kitchens = await findNearbyLiveKitchens(user.deliveryLat, user.deliveryLng, radius)
 
   return NextResponse.json({ radiusMiles: radius, kitchens })
 }
