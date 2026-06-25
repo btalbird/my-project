@@ -22,7 +22,7 @@ export function getListingPriceId(): string {
 }
 
 export function getAppBaseUrl(): string {
-  if (process.env.PDF_BASE_URL) return process.env.PDF_BASE_URL.replace(/\/$/, "")
+  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "")
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return "http://localhost:3002"
 }

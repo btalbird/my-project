@@ -25,3 +25,6 @@ node_modules
 
 # Local tooling (workspace-installed binaries, e.g. gh)
 .tools/
+
+# Local PDF export output (legacy)
+exports/
