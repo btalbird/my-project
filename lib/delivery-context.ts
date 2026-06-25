@@ -72,6 +72,21 @@ export function buildDeliveryCookieHeader(delivery: GeocodedDelivery): string {
   }`
 }
 
+export function applyDeliveryCookie(response: { cookies: { set: (name: string, value: string, options?: {
+  path?: string
+  maxAge?: number
+  sameSite?: "lax" | "strict" | "none"
+  secure?: boolean
+}) => void } }, delivery: GeocodedDelivery) {
+  const payload = deliveryToCookiePayload(delivery)
+  response.cookies.set(DELIVERY_COOKIE, JSON.stringify(payload), {
+    path: "/",
+    maxAge: COOKIE_MAX_AGE,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  })
+}
+
 export function buildClearDeliveryCookieHeader(): string {
   return `${DELIVERY_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`
 }

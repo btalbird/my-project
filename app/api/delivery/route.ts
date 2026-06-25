@@ -8,7 +8,7 @@ import {
   toGeocodedDelivery,
   type GeocodedDelivery,
 } from "@/lib/delivery-address"
-import { buildDeliveryCookieHeader, readDeliveryCookie, cookiePayloadToDelivery } from "@/lib/delivery-context"
+import { applyDeliveryCookie, readDeliveryCookie, cookiePayloadToDelivery } from "@/lib/delivery-context"
 import { formatDeliverySnippet } from "@/lib/live-kitchens"
 import { prisma } from "@/lib/db"
 import { getSessionUserId } from "@/lib/session"
@@ -29,7 +29,7 @@ function deliveryResponse(delivery: GeocodedDelivery, extra?: Record<string, unk
     },
     ...extra,
   })
-  res.headers.set("Set-Cookie", buildDeliveryCookieHeader(delivery))
+  applyDeliveryCookie(res, delivery)
   return res
 }
 
