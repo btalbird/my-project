@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   }
 
   const restaurantRow = await prisma.restaurant.findFirst({
-    where: { name: body.restaurant.trim(), ...liveKitchenWhere },
+    where: { name: body.restaurant.trim(), ...liveKitchenWhere() },
     include: {
       owner: {
         include: { cookConnect: true },
@@ -49,6 +49,17 @@ export async function POST(req: Request) {
     restaurantRow.longitude == null
   ) {
     return NextResponse.json({ error: "This kitchen is not available for orders." }, { status: 422 })
+  }
+
+  const permit = await prisma.kitchenMehkoPermit.findUnique({
+    where: { restaurantId: restaurantRow.id },
+    select: { status: true, expiresAt: true },
+  })
+  if (!permit || permit.status !== "approved" || !permit.expiresAt || permit.expiresAt <= new Date()) {
+    return NextResponse.json(
+      { error: "This kitchen does not have an active MEHKO permit and cannot accept orders." },
+      { status: 422 },
+    )
   }
 
   const delivery = await resolveDeliveryFromRequest(req)
@@ -107,44 +118,42 @@ export async function POST(req: Request) {
 
   const stripe = getStripe()
   const baseUrl = getAppBaseUrl()
+  const connectedAccountId = connect!.stripeAccountId
 
-  const paymentIntentData: {
-    transfer_data: { destination: string }
-    application_fee_amount?: number
-    metadata: { orderId: string; userId: string; restaurantId: string }
-  } = {
-    transfer_data: { destination: connect!.stripeAccountId },
-    metadata: {
-      orderId: String(order.id),
-      userId,
-      restaurantId: String(restaurantRow.id),
-    },
-  }
-
-  if (platformFeeCents > 0) {
-    paymentIntentData.application_fee_amount = platformFeeCents
-  }
-
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: body.lines.map((line) => ({
-      price_data: {
-        currency: "usd",
-        product_data: { name: line.name },
-        unit_amount: Math.max(1, parsePriceToCents(line.price)),
+  // Direct charge on the connected account with a platform application fee.
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: "payment",
+      line_items: body.lines.map((line) => ({
+        price_data: {
+          currency: "usd",
+          product_data: { name: line.name },
+          unit_amount: Math.max(1, parsePriceToCents(line.price)),
+        },
+        quantity: line.qty,
+      })),
+      payment_intent_data: {
+        ...(platformFeeCents > 0 ? { application_fee_amount: platformFeeCents } : {}),
+        metadata: {
+          orderId: String(order.id),
+          userId,
+          restaurantId: String(restaurantRow.id),
+        },
       },
-      quantity: line.qty,
-    })),
-    payment_intent_data: paymentIntentData,
-    success_url: `${baseUrl}/orders/${order.id}?paid=1`,
-    cancel_url: `${baseUrl}/cart?cancelled=1&restaurant=${encodeURIComponent(body.restaurant)}`,
-    metadata: {
-      orderId: String(order.id),
-      userId,
-      restaurantId: String(restaurantRow.id),
-      type: "food_order",
+      success_url: `${baseUrl}/orders/${order.id}?paid=1`,
+      cancel_url: `${baseUrl}/cart?cancelled=1&restaurant=${encodeURIComponent(body.restaurant)}`,
+      metadata: {
+        orderId: String(order.id),
+        userId,
+        restaurantId: String(restaurantRow.id),
+        type: "food_order",
+      },
     },
-  })
+    {
+      // Stripe-Account header — charge is created on the cook's connected account.
+      stripeAccount: connectedAccountId,
+    },
+  )
 
   await prisma.order.update({
     where: { id: order.id },

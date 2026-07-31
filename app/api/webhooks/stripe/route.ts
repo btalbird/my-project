@@ -1,27 +1,42 @@
 import type Stripe from "stripe"
 
-import { upsertCookSubscriptionFromStripe, syncCookSubscriptionByCustomerId } from "@/lib/cook-subscription"
+import {
+  subscriptionBillingAccountId,
+  syncCookSubscriptionByBillingAccountId,
+  upsertCookSubscriptionFromStripe,
+} from "@/lib/cook-subscription"
 import { syncCookConnectByAccountId } from "@/lib/cook-connect"
+import { prisma } from "@/lib/db"
 import { fulfillOrderFromCheckoutSession, markOrderPaymentFailed } from "@/lib/order-payment"
-import { getStripe } from "@/lib/stripe"
+import { getStandardWebhookSecret, getStripe } from "@/lib/stripe"
 
 export const runtime = "nodejs"
 
 async function handleSubscriptionEvent(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId
-  const customerId =
-    typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id
+  const billingAccountId = subscriptionBillingAccountId(subscription)
+
+  if (!billingAccountId) return null
 
   if (userId) {
-    return upsertCookSubscriptionFromStripe(userId, customerId, subscription)
+    return upsertCookSubscriptionFromStripe(userId, billingAccountId, subscription)
   }
-  return syncCookSubscriptionByCustomerId(customerId, subscription)
+  return syncCookSubscriptionByBillingAccountId(billingAccountId, subscription)
 }
 
+/**
+ * Standard (snapshot) Stripe webhooks — checkout, subscriptions, invoices.
+ * Configure in Dashboard → Webhooks → Your platform endpoint.
+ */
 export async function POST(req: Request) {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
-  if (!webhookSecret) {
-    return Response.json({ error: "Webhook not configured" }, { status: 500 })
+  let webhookSecret: string
+  try {
+    webhookSecret = getStandardWebhookSecret()
+  } catch (error) {
+    return Response.json(
+      { error: error instanceof Error ? error.message : "Webhook not configured" },
+      { status: 500 },
+    )
   }
 
   const stripe = getStripe()
@@ -38,24 +53,27 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid signature" }, { status: 400 })
   }
 
+  try {
+    await prisma.stripeWebhookEvent.create({ data: { id: event.id } })
+  } catch {
+    return Response.json({ received: true, duplicate: true })
+  }
+
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session
       if (session.mode === "subscription") {
         const userId = session.metadata?.userId
-        const customerId =
-          typeof session.customer === "string" ? session.customer : session.customer?.id
         const subscriptionId =
           typeof session.subscription === "string" ? session.subscription : session.subscription?.id
 
-        if (!userId || !customerId) break
+        if (!userId || !subscriptionId) break
 
-        let subscription: Stripe.Subscription | null = null
-        if (subscriptionId) {
-          subscription = await stripe.subscriptions.retrieve(subscriptionId)
-        }
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+        const billingAccountId = subscriptionBillingAccountId(subscription)
+        if (!billingAccountId) break
 
-        await upsertCookSubscriptionFromStripe(userId, customerId, subscription)
+        await upsertCookSubscriptionFromStripe(userId, billingAccountId, subscription)
         break
       }
 
@@ -84,9 +102,7 @@ export async function POST(req: Request) {
         subscription?: string | Stripe.Subscription | null
       }).subscription
       const subscriptionId =
-        typeof subscriptionRef === "string"
-          ? subscriptionRef
-          : subscriptionRef?.id ?? null
+        typeof subscriptionRef === "string" ? subscriptionRef : subscriptionRef?.id ?? null
       if (!subscriptionId) break
       const subscription = await stripe.subscriptions.retrieve(subscriptionId)
       await handleSubscriptionEvent(subscription)

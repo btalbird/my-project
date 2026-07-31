@@ -3,11 +3,20 @@ import { NextResponse } from "next/server"
 
 import { isEmailInAdminAllowlist } from "@/lib/admin-allowlist"
 import { prisma } from "@/lib/db"
-import { SESSION_COOKIE } from "@/lib/session"
+import { checkRateLimit, clientIp } from "@/lib/rate-limit"
+import { buildSessionCookie } from "@/lib/session-cookie"
 
 export const dynamic = "force-dynamic"
 
 export async function POST(req: Request) {
+  const rate = checkRateLimit(`login:${clientIp(req)}`, 10, 60_000)
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "Too many login attempts. Please try again shortly." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } },
+    )
+  }
+
   let body: { email?: string; password?: string; remember?: boolean }
   try {
     body = await req.json()
@@ -42,12 +51,6 @@ export async function POST(req: Request) {
     userId: sessionUser.id,
     role: sessionUser.role,
   })
-  res.cookies.set(SESSION_COOKIE, sessionUser.id, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge,
-    secure: process.env.NODE_ENV === "production",
-  })
+  res.cookies.set(await buildSessionCookie(sessionUser.id, maxAge))
   return res
 }

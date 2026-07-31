@@ -12,6 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useCartCount } from "@/hooks/use-cart-count"
+import { SiteMobileMenu } from "@/components/site-mobile-menu"
 import { SearchBar } from "./search-bar"
 
 export function Header() {
@@ -21,7 +23,7 @@ export function Header() {
   const [userId, setUserId] = useState<string | null | undefined>(undefined)
   const [userRole, setUserRole] = useState<string | null | undefined>(undefined)
   const [deliveryLabel, setDeliveryLabel] = useState("Set delivery address")
-  const cartItemCount = 3
+  const cartItemCount = useCartCount(userId)
 
   useEffect(() => {
     let cancelled = false
@@ -109,7 +111,7 @@ export function Header() {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-2">
+          <div className="relative flex items-center gap-2">
             {/* Cart */}
             <Button asChild variant="ghost" size="icon" className="relative rounded-full">
               <Link href="/cart">
@@ -191,10 +193,22 @@ export function Header() {
               size="icon"
               className="lg:hidden rounded-full"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="site-mobile-menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               <span className="sr-only">Toggle menu</span>
             </Button>
+
+            {mobileMenuOpen ? (
+              <SiteMobileMenu
+                signedIn={signedIn}
+                showAdminLink={showAdminLink}
+                showCookDashboardLink={showCookDashboardLink}
+                onClose={() => setMobileMenuOpen(false)}
+                onSignOut={() => void signOut()}
+              />
+            ) : null}
           </div>
         </div>
 
@@ -202,66 +216,6 @@ export function Header() {
         <div className="lg:hidden pb-3">
           <SearchBar />
         </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t-2 border-border bg-card/98 py-4 text-foreground backdrop-blur-sm space-y-3">
-            <Link
-              href="/delivery"
-              className="flex items-center gap-2 px-3 py-2 w-full rounded-lg hover:bg-secondary transition-colors"
-            >
-              <MapPin className="w-5 h-5 text-primary" />
-              <div className="text-left">
-                <p className="text-xs text-muted-foreground">Delivering to</p>
-                <p className="text-sm font-medium text-foreground">{deliveryLabel}</p>
-              </div>
-            </Link>
-            {signedIn ? (
-              <>
-                <Link
-                  href="/member"
-                  className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
-                >
-                  Member portal
-                </Link>
-                {showCookDashboardLink ? (
-                  <Link
-                    href="/for-cooks/cook-dashboard"
-                    className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
-                  >
-                    Cook Dashboard
-                  </Link>
-                ) : null}
-                {showAdminLink ? (
-                  <Link
-                    href="/admin"
-                    className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
-                  >
-                    Admin
-                  </Link>
-                ) : null}
-                <Link
-                  href="/orders"
-                  className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
-                >
-                  My orders
-                </Link>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full rounded-full"
-                  onClick={() => void signOut()}
-                >
-                  Sign out
-                </Button>
-              </>
-            ) : (
-              <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
-                <Link href="/signin">Sign In</Link>
-              </Button>
-            )}
-          </div>
-        )}
       </div>
     </header>
   )

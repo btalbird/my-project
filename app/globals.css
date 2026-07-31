@@ -141,6 +141,36 @@
   }
 }
 
+/* Typography preview — /for-cooks/become-a-cook only (PENDING site-wide decision).
+ * Headings: Cormorant Garamond (.font-heading-preview)
+ * Body: Instrument Serif (.become-cook-body-preview)
+ * Rest of site: Inclusive Sans + Fraunces via font-serif. Leave as-is until user confirms rollout.
+ */
+@layer utilities {
+  .font-heading-preview {
+    font-family: var(--font-heading-preview), Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+  }
+}
+
+/* Opt-in body serif preview (Instrument Serif) — become-a-cook page content only. */
+.become-cook-body-preview {
+  font-family: var(--font-body-preview), Georgia, 'Times New Roman', serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.become-cook-body-preview .font-heading-preview {
+  font-family: var(--font-heading-preview), Georgia, 'Times New Roman', serif;
+  line-height: 1.2;
+}
+
+.become-cook-body-preview :is(button, [data-slot='button'], input, select, textarea) {
+  font-family: var(--font-inclusive-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 /* Guess Who elimination animation (global to avoid hydration issues) */
 @media (prefers-reduced-motion: reduce) {
   .guesswho-flipout {

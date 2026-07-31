@@ -134,6 +134,7 @@ export function Footer() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link href="/legal/terms" className="hover:text-primary transition-colors">Terms</Link>
             <Link href="/legal/privacy" className="hover:text-primary transition-colors">Privacy</Link>
+            <Link href="/legal/refunds" className="hover:text-primary transition-colors">Refunds</Link>
             <Link href="/legal/cookies" className="hover:text-primary transition-colors">Cookies</Link>
           </div>
         </div>

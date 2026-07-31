@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { CheckCircle2, HandHeart, MapPin, MessageSquareText, ShieldCheck } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -240,7 +239,6 @@ export default function AccessibilityPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

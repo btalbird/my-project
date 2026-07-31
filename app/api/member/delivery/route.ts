@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { prisma } from "@/lib/db"
+import { parseOptionalCoords } from "@/lib/delivery-address"
 import { geocodeAddress } from "@/lib/geocode-nominatim"
 import { getSessionUserId } from "@/lib/session"
 
@@ -58,6 +59,8 @@ export async function PUT(req: Request) {
     state?: string
     postalCode?: string
     radiusMiles?: number
+    lat?: number
+    lng?: number
   }
   try {
     body = await req.json()
@@ -78,13 +81,16 @@ export async function PUT(req: Request) {
     )
   }
 
-  const coords = await geocodeAddress({
-    line1,
-    line2: line2 || undefined,
-    city,
-    state,
-    postalCode,
-  })
+  const providedCoords = parseOptionalCoords(body)
+  const coords =
+    providedCoords ??
+    (await geocodeAddress({
+      line1,
+      line2: line2 || undefined,
+      city,
+      state,
+      postalCode,
+    }))
 
   if (!coords) {
     return NextResponse.json(

@@ -4,6 +4,7 @@ import { requireCookUser } from "@/lib/cook-auth"
 import { prisma } from "@/lib/db"
 import { getAppBaseUrl, getStripe } from "@/lib/stripe"
 
+/** Open the cook's Stripe Express / full dashboard for payouts. */
 export async function POST() {
   const auth = await requireCookUser()
   if ("response" in auth) return auth.response
@@ -17,15 +18,31 @@ export async function POST() {
     return NextResponse.json({ error: "Connect Stripe first" }, { status: 400 })
   }
 
-  if (!connect.chargesEnabled) {
-    return NextResponse.json({ error: "Stripe account not ready for payouts yet" }, { status: 400 })
+  let stripeClient: ReturnType<typeof getStripe>
+  try {
+    stripeClient = getStripe()
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Stripe is not configured" },
+      { status: 500 },
+    )
   }
 
-  const stripe = getStripe()
-  const loginLink = await stripe.accounts.createLoginLink(connect.stripeAccountId)
-
-  return NextResponse.json({
-    url: loginLink.url,
-    returnUrl: `${getAppBaseUrl()}/for-cooks/cook-dashboard`,
-  })
+  try {
+    const loginLink = await stripeClient.accounts.createLoginLink(connect.stripeAccountId)
+    return NextResponse.json({
+      url: loginLink.url,
+      returnUrl: `${getAppBaseUrl()}/for-cooks/cook-dashboard`,
+    })
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Could not open Stripe dashboard. Finish onboarding first.",
+      },
+      { status: 502 },
+    )
+  }
 }

@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ExternalLink, Sprout } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { BRING_ITK_EXPANSION_WATCHLIST } from "@/lib/bring-itk-expansion-watch"
 import { MEHKO_ORG_CA_COUNTIES_URL } from "@/lib/mehko-california-counties"
 import { Badge } from "@/components/ui/badge"
@@ -142,7 +141,6 @@ export default function BringItkToYourNeighborhoodPage() {
           </section>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

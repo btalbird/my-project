@@ -1,5 +1,6 @@
 "use client"
 
+import { ChefHat } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PasswordInput } from "@/components/password-input"
 
 export function CookSignUpForm() {
   const router = useRouter()
@@ -19,7 +21,11 @@ export function CookSignUpForm() {
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-10 sm:px-6 lg:grid-cols-2 lg:px-8">
       <div className="flex items-center justify-center">
         <div className="w-full max-w-md">
-          <h1 className="font-serif text-3xl font-bold text-foreground">Start your home kitchen on Munch</h1>
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary">
+            <ChefHat className="h-3.5 w-3.5" />
+            Cook portal
+          </div>
+          <h1 className="mt-4 font-serif text-3xl font-bold text-foreground">Start your home kitchen on Munch</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Create a cook account, set up your kitchen listing, and appear to neighbors searching for homemade meals
             near their address.
@@ -89,13 +95,12 @@ export function CookSignUpForm() {
               <Label htmlFor="password" className="text-xs font-normal text-muted-foreground">
                 Password
               </Label>
-              <Input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
                 autoComplete="new-password"
                 minLength={8}
-                className="rounded-none border-0 border-b px-0 shadow-none focus-visible:border-b-ring focus-visible:ring-0"
+                className="rounded-none border-0 border-b pl-0 pr-10 shadow-none focus-visible:border-b-ring focus-visible:ring-0"
                 required
               />
             </div>
@@ -120,7 +125,7 @@ export function CookSignUpForm() {
 
             <p className="text-sm text-muted-foreground">
               Already have a cook account?{" "}
-              <Link href="/signin?next=/for-cooks/cook-dashboard" className="text-primary hover:underline">
+              <Link href="/for-cooks/signin?next=/for-cooks/cook-dashboard" className="text-primary hover:underline">
                 Sign in
               </Link>
             </p>

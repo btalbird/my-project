@@ -2,8 +2,10 @@ import { Prisma } from "@prisma/client"
 import { NextResponse } from "next/server"
 
 import { requireCookUser } from "@/lib/cook-auth"
+import { parseOptionalCoords } from "@/lib/delivery-address"
 import { geocodeAddress } from "@/lib/geocode-nominatim"
 import { prisma } from "@/lib/db"
+import { isPermitLive } from "@/lib/mehko-permit-verify"
 
 const kitchenSelect = {
   id: true,
@@ -38,7 +40,8 @@ function parseKitchenBody(body: Record<string, unknown>) {
   const image = body.image !== undefined ? String(body.image).trim() : "🍽️"
   const deliveryTime = body.deliveryTime !== undefined ? String(body.deliveryTime).trim() : "30–45 min"
   const deliveryFee = body.deliveryFee !== undefined ? String(body.deliveryFee).trim() : "$2.99"
-  const isPublished = body.isPublished !== undefined ? Boolean(body.isPublished) : true
+  const isPublished =
+    body.isPublished !== undefined ? Boolean(body.isPublished) : undefined
 
   return {
     name,
@@ -105,13 +108,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: validationError }, { status: 400 })
   }
 
-  const coords = await geocodeAddress({
-    line1: fields.addressLine1,
-    line2: fields.addressLine2 || undefined,
-    city: fields.addressCity,
-    state: fields.addressState,
-    postalCode: fields.addressPostalCode,
-  })
+  const coords =
+    parseOptionalCoords(body) ??
+    (await geocodeAddress({
+      line1: fields.addressLine1,
+      line2: fields.addressLine2 || undefined,
+      city: fields.addressCity,
+      state: fields.addressState,
+      postalCode: fields.addressPostalCode,
+    }))
 
   if (!coords) {
     return NextResponse.json(
@@ -138,7 +143,7 @@ export async function POST(req: Request) {
         deliveryFee: fields.deliveryFee,
         isMehko: true,
         isDemo: false,
-        isPublished: fields.isPublished,
+        isPublished: false,
         latitude: coords.lat,
         longitude: coords.lng,
         addressLine1: fields.addressLine1,
@@ -187,13 +192,15 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: validationError }, { status: 400 })
   }
 
-  const coords = await geocodeAddress({
-    line1: fields.addressLine1,
-    line2: fields.addressLine2 || undefined,
-    city: fields.addressCity,
-    state: fields.addressState,
-    postalCode: fields.addressPostalCode,
-  })
+  const coords =
+    parseOptionalCoords(body) ??
+    (await geocodeAddress({
+      line1: fields.addressLine1,
+      line2: fields.addressLine2 || undefined,
+      city: fields.addressCity,
+      state: fields.addressState,
+      postalCode: fields.addressPostalCode,
+    }))
 
   if (!coords) {
     return NextResponse.json(
@@ -209,6 +216,19 @@ export async function PATCH(req: Request) {
     }
   }
 
+  if (fields.isPublished === true) {
+    const permit = await prisma.kitchenMehkoPermit.findUnique({
+      where: { restaurantId: kitchen.id },
+      select: { status: true, expiresAt: true },
+    })
+    if (!isPermitLive(permit)) {
+      return NextResponse.json(
+        { error: "An approved MEHKO permit is required before publishing your kitchen." },
+        { status: 422 },
+      )
+    }
+  }
+
   try {
     const updated = await prisma.restaurant.update({
       where: { id: kitchen.id },
@@ -218,7 +238,7 @@ export async function PATCH(req: Request) {
         cuisine: fields.cuisine,
         deliveryTime: fields.deliveryTime,
         deliveryFee: fields.deliveryFee,
-        isPublished: fields.isPublished,
+        ...(fields.isPublished !== undefined ? { isPublished: fields.isPublished } : {}),
         latitude: coords.lat,
         longitude: coords.lng,
         addressLine1: fields.addressLine1,

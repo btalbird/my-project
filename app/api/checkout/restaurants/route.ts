@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     ? await findNearbyLiveKitchens(delivery.lat, delivery.lng, delivery.radiusMiles)
     : (
         await prisma.restaurant.findMany({
-          where: liveKitchenWhere,
+          where: liveKitchenWhere(),
           select: { id: true, name: true, cuisine: true },
           orderBy: { name: "asc" },
         })

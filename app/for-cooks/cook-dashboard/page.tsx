@@ -3,9 +3,8 @@ import { redirect } from "next/navigation"
 import { Suspense } from "react"
 
 import { CookDashboardClient } from "@/components/cook-dashboard-client"
-import { Footer } from "@/components/footer"
 import { getSessionUser } from "@/lib/auth-user"
-import { isCookRole } from "@/lib/cook-auth"
+import { cookSignInUrl, isCookRole } from "@/lib/cook-auth"
 
 export const metadata: Metadata = {
   title: "Cook Dashboard | Munch",
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function CookDashboardPage() {
   const user = await getSessionUser()
-  if (!user) redirect("/signin?next=/for-cooks/cook-dashboard")
+  if (!user) redirect(cookSignInUrl("/for-cooks/cook-dashboard"))
 
   if (!isCookRole(user.role)) {
     return (
@@ -33,23 +32,17 @@ export default async function CookDashboardPage() {
             .
           </p>
         </main>
-        <Footer />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="border-b border-border">
-        <Suspense
-          fallback={
-            <div className="py-24 text-center text-muted-foreground">Loading cook dashboard…</div>
-          }
-        >
-          <CookDashboardClient />
-        </Suspense>
-      </main>
-      <Footer />
-    </div>
+    <Suspense
+      fallback={
+        <div className="py-24 text-center text-muted-foreground">Loading cook dashboard…</div>
+      }
+    >
+      <CookDashboardClient />
+    </Suspense>
   )
 }

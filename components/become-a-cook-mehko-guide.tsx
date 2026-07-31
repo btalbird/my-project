@@ -39,9 +39,11 @@ const STEPS = [
   },
 ] as const
 
+const headingPreview = "font-heading-preview"
+
 export function BecomeACookMehkoGuide() {
   return (
-    <main className="border-b border-border bg-gradient-to-b from-secondary/30 to-background">
+    <main className="become-cook-body-preview border-b border-border bg-gradient-to-b from-secondary/30 to-background">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
         <nav className="text-sm text-muted-foreground">
           <Link href="/" className="hover:text-foreground transition-colors">
@@ -53,7 +55,7 @@ export function BecomeACookMehkoGuide() {
 
         <div className="mt-6 space-y-3">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h1 className={`${headingPreview} text-4xl tracking-tight text-foreground sm:text-[2.625rem]`}>
               Become a MEHKO-certified home cook in California
             </h1>
             <Badge variant="secondary" className="rounded-full">
@@ -77,7 +79,7 @@ export function BecomeACookMehkoGuide() {
         </Alert>
 
         <section className="mt-10 space-y-4">
-          <h2 className="font-serif text-2xl font-bold text-foreground">What is MEHKO?</h2>
+          <h2 className={`${headingPreview} text-[1.75rem] text-foreground sm:text-3xl`}>What is MEHKO?</h2>
           <p className="max-w-3xl text-muted-foreground">
             MEHKO stands for{" "}
             <span className="font-medium text-foreground">Microenterprise Home Kitchen Operation</span>. It’s a
@@ -94,7 +96,7 @@ export function BecomeACookMehkoGuide() {
         <Separator className="my-10" />
 
         <section>
-          <h2 className="font-serif text-2xl font-bold text-foreground">How to become permitted (high-level)</h2>
+          <h2 className={`${headingPreview} text-[1.75rem] text-foreground sm:text-3xl`}>How to become permitted (high-level)</h2>
           <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
             Order and names of steps depend on your jurisdiction. Use this as a checklist to discuss with environmental
             health—not a guarantee of approval or timeline.
@@ -105,11 +107,11 @@ export function BecomeACookMehkoGuide() {
               <li key={step.title}>
                 <Card className="border-2 border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="flex items-start gap-3 text-lg font-semibold">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+                    <CardTitle className="flex items-start gap-3 text-xl font-bold">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 font-sans text-sm font-bold text-primary">
                         {i + 1}
                       </span>
-                      <span>{step.title}</span>
+                      <span className={`${headingPreview} text-xl sm:text-[1.375rem]`}>{step.title}</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3 pt-0 text-sm text-muted-foreground">
@@ -123,7 +125,7 @@ export function BecomeACookMehkoGuide() {
 
         <Card className="mt-10 border-2 border-border">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-serif text-xl">
+            <CardTitle className={`${headingPreview} flex items-center gap-2 text-2xl`}>
               <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden />
               Official links (permits and information)
             </CardTitle>
@@ -156,12 +158,15 @@ export function BecomeACookMehkoGuide() {
 
         <Card className="mt-6 border-2 border-border bg-card/60">
           <CardHeader>
-            <CardTitle className="font-serif text-xl">On Munch</CardTitle>
+            <CardTitle className={`${headingPreview} text-2xl`}>On Munch</CardTitle>
             <CardDescription>More reading elsewhere on the site.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button asChild className="rounded-full">
               <Link href="/for-cooks/signup">Create your cook account</Link>
+            </Button>
+            <Button asChild variant="secondary" className="rounded-full">
+              <Link href="/for-cooks/signin">Sign in to cook portal</Link>
             </Button>
             <Button asChild variant="secondary" className="rounded-full">
               <Link href="/promos/2">What is MEHKO certification? (overview)</Link>

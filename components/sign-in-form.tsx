@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PasswordInput } from "@/components/password-input"
 
 /** Same-origin paths only; rejects protocol-relative URLs like `//evil.com`. */
 function safePostLoginPath(next: string | null): string {
@@ -76,10 +77,9 @@ export function SignInForm() {
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
+                <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
                   autoComplete="current-password"
                   required
                 />
@@ -131,6 +131,12 @@ export function SignInForm() {
                 Don&apos;t have an account?{" "}
                 <Link href="/signup" className="text-primary hover:underline">
                   Sign up
+                </Link>
+              </p>
+              <p className="text-center text-sm text-muted-foreground">
+                Running a home kitchen?{" "}
+                <Link href="/for-cooks/signin" className="text-primary hover:underline">
+                  Kitchen Sign In
                 </Link>
               </p>
             </form>

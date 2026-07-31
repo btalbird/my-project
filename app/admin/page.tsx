@@ -1,6 +1,7 @@
 import { getSessionUser } from "@/lib/auth-user"
 import { prisma } from "@/lib/db"
 import { AdminUsersTable } from "@/components/admin-users-table"
+import { AdminMehkoPermitsTable } from "@/components/admin-mehko-permits-table"
 
 export default async function AdminPage() {
   const me = await getSessionUser()
@@ -22,6 +23,7 @@ export default async function AdminPage() {
         <h1 className="font-serif text-3xl font-bold tracking-tight">Admin</h1>
         <p className="mt-1 text-muted-foreground">Signed in as {me.email}</p>
       </div>
+      <AdminMehkoPermitsTable />
       <AdminUsersTable users={users} currentUserId={me.id} restaurants={restaurants} />
     </div>
   )

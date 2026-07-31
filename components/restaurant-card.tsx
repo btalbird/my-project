@@ -17,6 +17,8 @@ interface RestaurantCardProps {
     promo?: string | null
     /** When set (e.g. member portal), shown as straight-line miles from saved home. */
     distanceMiles?: number
+    /** Flat monthly Munch kitchen listing fee label (e.g. local cooks transparency). */
+    monthlyListingFee?: string
   }
 }
 
@@ -104,6 +106,11 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
             {restaurant.distanceMiles < 10
               ? `${restaurant.distanceMiles.toFixed(1)} mi away`
               : `${Math.round(restaurant.distanceMiles)} mi away`}
+          </p>
+        ) : null}
+        {restaurant.monthlyListingFee ? (
+          <p className="text-sm text-primary-foreground/85">
+            Munch listing: <span className="font-medium">{restaurant.monthlyListingFee}</span>
           </p>
         ) : null}
         <p className="text-sm text-primary-foreground/85">{restaurant.deliveryFee} delivery fee</p>

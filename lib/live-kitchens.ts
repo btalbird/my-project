@@ -1,13 +1,24 @@
 import type { Prisma } from "@prisma/client"
 
-/** Customer-facing live kitchens: cook-owned, geocoded, not demo. */
-export const liveKitchenWhere: Prisma.RestaurantWhereInput = {
-  isMehko: true,
-  isPublished: true,
-  isDemo: false,
-  ownerId: { not: null },
-  latitude: { not: null },
-  longitude: { not: null },
+/** Customer-facing live kitchens: cook-owned, geocoded, subscribed, permit-verified, not demo. */
+export function liveKitchenWhere(now = new Date()): Prisma.RestaurantWhereInput {
+  return {
+    isMehko: true,
+    isPublished: true,
+    isDemo: false,
+    ownerId: { not: null },
+    latitude: { not: null },
+    longitude: { not: null },
+    owner: {
+      cookSubscription: {
+        status: "active",
+      },
+    },
+    mehkoPermit: {
+      status: "approved",
+      expiresAt: { gt: now },
+    },
+  }
 }
 
 export function formatDeliverySnippet(city: string | null | undefined, postalCode: string | null | undefined): string {

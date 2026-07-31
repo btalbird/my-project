@@ -40,7 +40,7 @@ export async function loadLiveKitchenRows(filters?: NearbyKitchenFilters) {
 
   return prisma.restaurant.findMany({
     where: {
-      ...liveKitchenWhere,
+      ...liveKitchenWhere(),
       ...(category ? { category: { slug: category } } : {}),
       ...(q
         ? {

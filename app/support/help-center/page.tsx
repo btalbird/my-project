@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { Clock, CreditCard, HelpCircle, MapPin, Package, Phone, Search, ShieldCheck } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -250,7 +249,6 @@ export default function HelpCenterPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

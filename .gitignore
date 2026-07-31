@@ -26,5 +26,8 @@ node_modules
 # Local tooling (workspace-installed binaries, e.g. gh)
 .tools/
 
-# Local PDF export output (legacy)
-exports/
+# Uploaded menu photos (keep folder via .gitkeep)
+public/uploads/menu/**
+!public/uploads/menu/.gitkeep
+public/uploads/mehko-permits/**
+!public/uploads/mehko-permits/.gitkeep

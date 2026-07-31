@@ -6,7 +6,6 @@ import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Facebook, Instagram, Mail, MessageSquareText, Phone, Send, Twitter } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -293,7 +292,6 @@ function ContactUsPageInner() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }
@@ -308,7 +306,6 @@ export default function ContactUsPage() {
               Loading…
             </div>
           </main>
-          <Footer />
         </div>
       }
     >

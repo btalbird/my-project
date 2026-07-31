@@ -15,8 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-type Line = { name: string; qty: number; price: string }
+import { clearCart, readCart, updateCartLineQty, type CartLine } from "@/lib/cart-storage"
 
 type CheckoutRestaurant = {
   id: number
@@ -26,24 +25,50 @@ type CheckoutRestaurant = {
   distanceMiles?: number
 }
 
-const initialLines: Line[] = [
-  { name: "Neighborhood bowl", qty: 1, price: "$14.00" },
-  { name: "Seasonal side", qty: 1, price: "$5.50" },
-]
-
 export function CartPageClient() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [userId, setUserId] = useState<string | null | undefined>(undefined)
   const [restaurants, setRestaurants] = useState<CheckoutRestaurant[]>([])
   const [restaurant, setRestaurant] = useState("")
   const [deliveryWindow, setDeliveryWindow] = useState("Estimated arrival · 6:15–6:40 PM")
-  const [lines, setLines] = useState<Line[]>(initialLines)
+  const [lines, setLines] = useState<CartLine[]>([])
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const [loadingKitchens, setLoadingKitchens] = useState(true)
   const [needsAddress, setNeedsAddress] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+    fetch("/api/auth/me")
+      .then(async (res) => {
+        const data = (await res.json()) as { userId?: string | null }
+        if (!cancelled) setUserId(data.userId ?? null)
+      })
+      .catch(() => {
+        if (!cancelled) setUserId(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!userId) {
+      setLines([])
+      return
+    }
+    const cart = readCart(userId)
+    if (cart?.lines.length) {
+      setLines(cart.lines)
+      setRestaurant(cart.restaurantName)
+    } else {
+      setLines([])
+    }
+  }, [userId])
+
+  useEffect(() => {
+    if (!userId) return
     const fromQuery = searchParams.get("restaurant")
     let cancelled = false
     ;(async () => {
@@ -57,12 +82,17 @@ export function CartPageClient() {
         const list = Array.isArray(data.restaurants) ? data.restaurants : []
         setNeedsAddress(Boolean(data.needsAddress))
         setRestaurants(list)
+        const cart = readCart(userId)
         const preferred =
+          cart?.restaurantName ||
           (fromQuery && list.find((r) => r.name === fromQuery)?.name) ||
           list.find((r) => r.acceptsPaidOrders)?.name ||
           list[0]?.name ||
           ""
         setRestaurant(preferred)
+        if (cart?.lines.length && cart.restaurantName === preferred) {
+          setLines(cart.lines)
+        }
       } finally {
         if (!cancelled) setLoadingKitchens(false)
       }
@@ -70,7 +100,13 @@ export function CartPageClient() {
     return () => {
       cancelled = true
     }
-  }, [searchParams])
+  }, [searchParams, userId])
+
+  function setQty(menuItemId: number, qty: number) {
+    const next = updateCartLineQty(userId, menuItemId, qty)
+    setLines(next?.lines ?? [])
+    if (!next) setRestaurant("")
+  }
 
   const subtotalNums = lines.map((l) => {
     const n = Number.parseFloat(l.price.replace(/[^0-9.]/g, ""))
@@ -82,6 +118,10 @@ export function CartPageClient() {
   const selectedKitchen = restaurants.find((r) => r.name === restaurant)
 
   async function payWithStripe() {
+    if (!userId) {
+      router.push(`/signin?next=${encodeURIComponent("/cart")}`)
+      return
+    }
     setError(null)
     setPending(true)
     try {
@@ -108,6 +148,7 @@ export function CartPageClient() {
         return
       }
       if (typeof data.url === "string") {
+        clearCart(userId)
         window.location.href = data.url
         return
       }
@@ -118,6 +159,8 @@ export function CartPageClient() {
   }
 
   const cancelled = searchParams.get("cancelled") === "1"
+  const signedIn = Boolean(userId)
+  const authLoading = userId === undefined
 
   return (
     <main className="mx-auto max-w-lg px-4 py-10 sm:px-6 lg:px-8">
@@ -125,6 +168,15 @@ export function CartPageClient() {
       <p className="mt-2 text-sm text-muted-foreground">
         Pay securely at checkout. Your payment goes to the home kitchen (minus any platform fee).
       </p>
+
+      {!authLoading && !signedIn ? (
+        <p className="mt-4 rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+          <Link href={`/signin?next=${encodeURIComponent("/cart")}`} className="font-medium text-primary hover:underline">
+            Sign in
+          </Link>{" "}
+          to save items in your cart and check out.
+        </p>
+      ) : null}
 
       {cancelled ? (
         <p className="mt-4 rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
@@ -189,45 +241,51 @@ export function CartPageClient() {
             />
           </div>
           <div className="space-y-2">
-            <p className="text-sm font-medium text-foreground">Line items</p>
-            <ul className="space-y-3 rounded-lg border border-border bg-secondary/20 p-3">
-              {lines.map((line, i) => (
-                <li key={i} className="grid gap-2 sm:grid-cols-[1fr_auto_auto] sm:items-end">
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Item</Label>
-                    <Input
-                      value={line.name}
-                      onChange={(e) => {
-                        const v = e.target.value
-                        setLines((prev) => prev.map((x, j) => (j === i ? { ...x, name: v } : x)))
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Qty</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={line.qty}
-                      onChange={(e) => {
-                        const q = Math.max(1, Number.parseInt(e.target.value, 10) || 1)
-                        setLines((prev) => prev.map((x, j) => (j === i ? { ...x, qty: q } : x)))
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Price</Label>
-                    <Input
-                      value={line.price}
-                      onChange={(e) => {
-                        const v = e.target.value
-                        setLines((prev) => prev.map((x, j) => (j === i ? { ...x, price: v } : x)))
-                      }}
-                    />
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <p className="text-sm font-medium text-foreground">Your items</p>
+            {lines.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-border bg-secondary/20 p-4 text-sm text-muted-foreground">
+                Your cart is empty.{" "}
+                <Link href="/restaurants" className="text-primary hover:underline">
+                  Browse kitchens
+                </Link>{" "}
+                and add menu items.
+              </p>
+            ) : (
+              <ul className="space-y-3 rounded-lg border border-border bg-secondary/20 p-3">
+                {lines.map((line) => (
+                  <li
+                    key={line.menuItemId}
+                    className="flex items-center justify-between gap-3 text-sm"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground">{line.name}</p>
+                      <p className="text-muted-foreground">{line.price} each</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-full"
+                        onClick={() => setQty(line.menuItemId, line.qty - 1)}
+                      >
+                        −
+                      </Button>
+                      <span className="w-6 text-center tabular-nums">{line.qty}</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-full"
+                        onClick={() => setQty(line.menuItemId, line.qty + 1)}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <p className="flex justify-between border-t border-border pt-3 text-sm">
             <span className="text-muted-foreground">Total</span>
@@ -243,6 +301,7 @@ export function CartPageClient() {
             className="w-full sm:w-auto rounded-full"
             disabled={
               pending ||
+              !signedIn ||
               lines.length === 0 ||
               !restaurant ||
               loadingKitchens ||

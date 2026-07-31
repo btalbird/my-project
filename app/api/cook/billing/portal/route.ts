@@ -4,24 +4,34 @@ import { requireCookUser } from "@/lib/cook-auth"
 import { prisma } from "@/lib/db"
 import { getAppBaseUrl, getStripe } from "@/lib/stripe"
 
+/** Stripe Customer Portal for the cook's listing subscription (V2 customer_account). */
 export async function POST() {
   const auth = await requireCookUser()
   if ("response" in auth) return auth.response
 
-  const subscription = await prisma.cookSubscription.findUnique({
+  const connect = await prisma.cookConnect.findUnique({
     where: { userId: auth.user.id },
-    select: { stripeCustomerId: true },
+    select: { stripeAccountId: true },
   })
 
-  if (!subscription?.stripeCustomerId) {
-    return NextResponse.json({ error: "No billing account found" }, { status: 400 })
+  if (!connect?.stripeAccountId) {
+    return NextResponse.json({ error: "Connect Stripe before managing billing" }, { status: 400 })
   }
 
-  const stripe = getStripe()
+  let stripeClient: ReturnType<typeof getStripe>
+  try {
+    stripeClient = getStripe()
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Stripe is not configured" },
+      { status: 500 },
+    )
+  }
+
   const baseUrl = getAppBaseUrl()
 
-  const session = await stripe.billingPortal.sessions.create({
-    customer: subscription.stripeCustomerId,
+  const session = await stripeClient.billingPortal.sessions.create({
+    customer_account: connect.stripeAccountId,
     return_url: `${baseUrl}/for-cooks/cook-dashboard`,
   })
 

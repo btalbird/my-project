@@ -559,6 +559,8 @@ if (seoulKitchen) {
       userId: buyerMaria.id,
       restaurantId: seoulKitchen,
       status: "delivered",
+      paymentStatus: "paid",
+      amountCents: 3248,
       items: {
         restaurant: "Seoul Street Kitchen",
         deliveryWindow: "Delivered today · 12:15 PM",
@@ -574,6 +576,8 @@ if (seoulKitchen) {
       userId: buyerJames.id,
       restaurantId: seoulKitchen,
       status: "preparing",
+      paymentStatus: "paid",
+      amountCents: 1999,
       items: {
         restaurant: "Seoul Street Kitchen",
         deliveryWindow: "Estimated · 7:30 PM",
@@ -589,6 +593,19 @@ if (seoulKitchen) {
 
   for (const o of cookKitchenOrders) {
     await prisma.order.create({ data: o })
+  }
+
+  await prisma.menuItem.deleteMany({ where: { restaurantId: seoulKitchen } })
+  const menuSeed = [
+    { name: "Bulgogi Bowl", description: "Marinated beef over rice with kimchi", priceCents: 1399, sortOrder: 1 },
+    { name: "Korean Fried Chicken", description: "Crispy wings with gochujang glaze", priceCents: 1699, sortOrder: 2 },
+    { name: "Miso Soup", description: "Comforting starter", priceCents: 450, sortOrder: 3 },
+    { name: "Pickled Radish", description: "Banchan side", priceCents: 300, sortOrder: 4 },
+  ]
+  for (const item of menuSeed) {
+    await prisma.menuItem.create({
+      data: { restaurantId: seoulKitchen, ...item },
+    })
   }
 }
 

@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { CheckCircle2, ExternalLink, ShieldCheck } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { MEHKO_AUTHORIZED_CALIFORNIA_JURISDICTIONS, MEHKO_LA_COUNTY_PROGRAM_CAVEAT } from "@/lib/mehko-california-counties"
 import { Promo3RecipesBrowse } from "@/components/promo3-personal-recipes"
 import { Badge } from "@/components/ui/badge"
@@ -116,7 +115,6 @@ function MehkoInfoPage() {
           </Card>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }
@@ -129,7 +127,6 @@ export default async function PromoPage({ params }: { params: Promise<{ promoId:
     return (
       <div className="min-h-screen bg-background">
         <Promo3RecipesBrowse />
-        <Footer />
       </div>
     )
 

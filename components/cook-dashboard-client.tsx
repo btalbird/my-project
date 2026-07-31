@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import { ChefHat, CreditCard, Loader2, TrendingUp, UtensilsCrossed, Wallet } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { CreditCard, Loader2, TrendingUp, UtensilsCrossed, Wallet } from "lucide-react"
+import { toast } from "sonner"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { CookKitchenSetupForm } from "@/components/cook-kitchen-setup-form"
+import { CookOnboardingChecklist } from "@/components/cook-onboarding-checklist"
 import { statusLabel, statusVariant } from "@/lib/order-format"
 
 type CookMeResponse = {
@@ -35,6 +37,15 @@ type CookMeResponse = {
     detailsSubmitted: boolean
     readyForPayments: boolean
   }
+  menuItemCount: number
+  paidOrderCount: number
+  mehkoPermit: {
+    status: string
+    expiresAt: string | null
+    isLive: boolean
+    renewalDue: boolean
+    rejectionReason: string | null
+  } | null
 }
 
 type CookOrder = {
@@ -84,17 +95,41 @@ function formatDayLabel(dateKey: string) {
 }
 
 export function CookDashboardClient() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(true)
   const [me, setMe] = useState<CookMeResponse | null>(null)
   const [orders, setOrders] = useState<CookOrder[]>([])
   const [stats, setStats] = useState<CookStats | null>(null)
+  const [listingFeeLabel, setListingFeeLabel] = useState<string | null>(null)
+  const [connectLive, setConnectLive] = useState<{
+    readyToProcessPayments: boolean
+    onboardingComplete: boolean
+    requirementsStatus: string | null
+    storefrontPath: string | null
+  } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [billingPending, setBillingPending] = useState(false)
   const [connectPending, setConnectPending] = useState(false)
 
   const subscribedFlash = searchParams.get("subscribed")
   const connectFlash = searchParams.get("connect")
+
+  useEffect(() => {
+    if (subscribedFlash === "1") {
+      toast.success("Thanks for subscribing! Your listing activates once payment is confirmed.")
+      router.replace("/for-cooks/cook-dashboard")
+    } else if (subscribedFlash === "0") {
+      toast.message("Checkout cancelled. Subscribe anytime to activate your listing.")
+      router.replace("/for-cooks/cook-dashboard")
+    } else if (connectFlash === "return") {
+      toast.success("Stripe Connect setup saved. Payouts unlock once Stripe verifies your account.")
+      router.replace("/for-cooks/cook-dashboard")
+    } else if (connectFlash === "refresh") {
+      toast.message("Stripe link expired. Click Continue Stripe setup to resume.")
+      router.replace("/for-cooks/cook-dashboard")
+    }
+  }, [subscribedFlash, connectFlash, router])
 
   const loadDashboard = useCallback(async () => {
     setError(null)
@@ -129,6 +164,26 @@ export function CookDashboardClient() {
     ;(async () => {
       try {
         await loadDashboard()
+        const feeRes = await fetch("/api/cooks/listing-fee")
+        if (!cancelled && feeRes.ok) {
+          const feeData = (await feeRes.json()) as { label?: string }
+          if (typeof feeData.label === "string") setListingFeeLabel(feeData.label)
+        }
+        const connectRes = await fetch("/api/cook/connect/status")
+        if (!cancelled && connectRes.ok) {
+          const connectData = (await connectRes.json()) as {
+            readyToProcessPayments?: boolean
+            onboardingComplete?: boolean
+            requirementsStatus?: string | null
+            storefrontPath?: string | null
+          }
+          setConnectLive({
+            readyToProcessPayments: Boolean(connectData.readyToProcessPayments),
+            onboardingComplete: Boolean(connectData.onboardingComplete),
+            requirementsStatus: connectData.requirementsStatus ?? null,
+            storefrontPath: connectData.storefrontPath ?? null,
+          })
+        }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : "Something went wrong")
       } finally {
@@ -229,12 +284,8 @@ export function CookDashboardClient() {
   const kitchenName = me.restaurants[0]?.name
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="space-y-8">
       <div className="space-y-2">
-        <div className="flex items-center gap-2 text-primary">
-          <ChefHat className="h-6 w-6" />
-          <span className="text-sm font-medium uppercase tracking-wide">Cook portal</span>
-        </div>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight">Cook Dashboard</h1>
         <p className="text-muted-foreground max-w-2xl">
           Manage your Munch kitchen listing, subscription, and orders
@@ -242,64 +293,100 @@ export function CookDashboardClient() {
         </p>
       </div>
 
-      {subscribedFlash === "1" ? (
-        <p className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
-          Thanks for subscribing! Your listing activates once payment is confirmed.
-        </p>
-      ) : null}
-      {subscribedFlash === "0" ? (
-        <p className="rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
-          Checkout was cancelled. Subscribe anytime to activate your kitchen listing.
-        </p>
-      ) : null}
-      {connectFlash === "return" ? (
-        <p className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
-          Stripe Connect setup saved. Refresh may take a moment — payouts unlock once Stripe verifies
-          your account.
-        </p>
-      ) : null}
-      {connectFlash === "refresh" ? (
-        <p className="rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
-          Stripe Connect link expired. Click &quot;Continue Stripe setup&quot; to pick up where you left off.
-        </p>
-      ) : null}
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
+
+      {me.mehkoPermit?.renewalDue ? (
+        <Card className="border-2 border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30">
+          <CardContent className="py-4">
+            <p className="text-sm text-amber-900 dark:text-amber-100">
+              Your MEHKO permit needs renewal
+              {me.mehkoPermit.expiresAt
+                ? ` by ${new Date(me.mehkoPermit.expiresAt).toLocaleDateString()}`
+                : ""}
+              .{" "}
+              <Link href="/for-cooks/permit" className="font-medium underline underline-offset-4">
+                Update your permit
+              </Link>{" "}
+              to stay visible to customers.
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {me.mehkoPermit?.status === "rejected" && me.mehkoPermit.rejectionReason ? (
+        <Card className="border-2 border-destructive/30">
+          <CardContent className="py-4">
+            <p className="text-sm text-destructive">
+              Permit rejected: {me.mehkoPermit.rejectionReason}{" "}
+              <Link href="/for-cooks/permit" className="font-medium underline underline-offset-4">
+                Resubmit permit
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      <CookOnboardingChecklist
+        connectReady={connectLive?.readyToProcessPayments ?? me.connect.readyForPayments}
+        hasConnectAccount={me.connect.hasAccount}
+        subscribed={me.hasActiveSubscription}
+        hasKitchen={me.restaurants.length > 0}
+        permitApproved={me.mehkoPermit?.isLive ?? false}
+        permitStatus={me.mehkoPermit?.status}
+        permitExpiresAt={me.mehkoPermit?.expiresAt}
+        permitRenewalDue={me.mehkoPermit?.renewalDue}
+        hasMenuItems={me.menuItemCount > 0}
+        hasPaidOrder={me.paidOrderCount > 0}
+        listingFeeLabel={listingFeeLabel}
+      />
 
       <Card className="border-2">
         <CardHeader>
           <CardTitle className="font-serif text-xl flex items-center gap-2">
             <Wallet className="h-5 w-5" />
-            Payouts (Stripe Connect)
+            Stripe Payouts
           </CardTitle>
           <CardDescription>
-            Connect your bank account to receive food order payments from customers on Munch.
+            Onboard to collect payments. Status is fetched live from Stripe on each visit.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
             <Badge
               variant={
-                me.connect.readyForPayments
+                (connectLive?.readyToProcessPayments ?? me.connect.readyForPayments)
                   ? "default"
                   : me.connect.hasAccount
                     ? "secondary"
                     : "outline"
               }
             >
-              {me.connect.readyForPayments
+              {(connectLive?.readyToProcessPayments ?? me.connect.readyForPayments)
                 ? "Ready for orders"
                 : me.connect.hasAccount
                   ? "Setup incomplete"
                   : "Not connected"}
             </Badge>
             <p className="text-sm text-muted-foreground">
-              {me.connect.readyForPayments
+              {(connectLive?.readyToProcessPayments ?? me.connect.readyForPayments)
                 ? "Customers can pay for meals from your kitchen at checkout."
-                : "Complete Stripe Express onboarding to accept paid orders."}
+                : "Click below to start Stripe-hosted onboarding."}
             </p>
+            {connectLive?.requirementsStatus ? (
+              <p className="text-xs text-muted-foreground">
+                Requirements: {connectLive.requirementsStatus.replace(/_/g, " ")}
+              </p>
+            ) : null}
+            {connectLive?.storefrontPath ? (
+              <p className="text-xs">
+                <Link href={connectLive.storefrontPath} className="text-primary underline-offset-4 hover:underline">
+                  Sample Stripe storefront
+                </Link>
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
-            {me.connect.readyForPayments ? (
+            {(connectLive?.readyToProcessPayments ?? me.connect.readyForPayments) ? (
               <Button variant="outline" disabled={connectPending} onClick={() => void openConnectDashboard()}>
                 Stripe payout dashboard
               </Button>
@@ -309,7 +396,7 @@ export function CookDashboardClient() {
                 ? "Redirecting…"
                 : me.connect.hasAccount
                   ? "Continue Stripe setup"
-                  : "Connect with Stripe"}
+                  : "Onboard to collect payments"}
             </Button>
           </div>
         </CardContent>
@@ -348,8 +435,15 @@ export function CookDashboardClient() {
               </Button>
             ) : null}
             {!me.hasActiveSubscription ? (
-              <Button disabled={billingPending} onClick={() => void startCheckout()}>
-                {billingPending ? "Redirecting…" : "Subscribe monthly"}
+              <Button
+                disabled={billingPending || !me.connect.hasAccount}
+                onClick={() => void startCheckout()}
+              >
+                {billingPending
+                  ? "Redirecting…"
+                  : listingFeeLabel
+                    ? `Subscribe (${listingFeeLabel})`
+                    : "Subscribe monthly"}
               </Button>
             ) : null}
           </div>
@@ -358,7 +452,21 @@ export function CookDashboardClient() {
 
       {me.restaurants.length === 0 ? (
         <CookKitchenSetupForm onSaved={() => void loadDashboard()} />
-      ) : null}
+      ) : (
+        <Card className="border-2">
+          <CardHeader>
+            <CardTitle className="font-serif text-xl">Kitchen listing</CardTitle>
+            <CardDescription>
+              {kitchenName} is on file. Update address, cuisine, or publish settings anytime.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="outline" className="rounded-full">
+              <Link href="/for-cooks/kitchen">Edit kitchen</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {!me.hasActiveSubscription ? (
         <Card className="border-2 border-dashed">
@@ -442,9 +550,14 @@ export function CookDashboardClient() {
           ) : null}
 
           <Card className="border-2">
-            <CardHeader>
-              <CardTitle className="font-serif text-xl">Recent orders</CardTitle>
-              <CardDescription>Customer names and dishes for your kitchen.</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between gap-4">
+              <div>
+                <CardTitle className="font-serif text-xl">Recent orders</CardTitle>
+                <CardDescription>Customer names and dishes for your kitchen.</CardDescription>
+              </div>
+              <Button asChild variant="outline" size="sm" className="rounded-full shrink-0">
+                <Link href="/for-cooks/orders">View all</Link>
+              </Button>
             </CardHeader>
             <CardContent>
               {orders.length === 0 ? (
@@ -502,15 +615,13 @@ export function CookDashboardClient() {
       ) : null}
 
       <p className="text-sm text-muted-foreground">
-        New to Munch? Review the{" "}
+        <Link href="/for-cooks/recipe-guidelines" className="text-primary underline-offset-4 hover:underline">
+          Recipe guidelines
+        </Link>
+        {" · "}
         <Link href="/for-cooks/become-a-cook" className="text-primary underline-offset-4 hover:underline">
           MEHKO permit guide
-        </Link>{" "}
-        and{" "}
-        <Link href="/for-cooks/recipe-guidelines" className="text-primary underline-offset-4 hover:underline">
-          recipe guidelines
         </Link>
-        .
       </p>
     </div>
   )

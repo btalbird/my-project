@@ -6,7 +6,13 @@ import type { PersonalChef } from "@/lib/neighborhood-chefs"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
-export function PersonalChefCard({ chef }: { chef: PersonalChef }) {
+export function PersonalChefCard({
+  chef,
+  monthlyListingFee,
+}: {
+  chef: PersonalChef
+  monthlyListingFee?: string
+}) {
   return (
     <Card className="h-full overflow-hidden border-2 border-border pt-0 shadow-sm transition-shadow hover:shadow-md">
       <div className="relative aspect-[4/5] w-full bg-muted">
@@ -25,6 +31,11 @@ export function PersonalChefCard({ chef }: { chef: PersonalChef }) {
         <p className="text-sm leading-relaxed text-muted-foreground">{chef.quip}</p>
       </CardHeader>
       <CardContent className="space-y-3 pb-2 pt-0">
+        {monthlyListingFee ? (
+          <p className="text-xs font-medium text-foreground">
+            Munch listing fee: <span className="tabular-nums">{monthlyListingFee}</span>
+          </p>
+        ) : null}
         <div className="rounded-lg border border-border bg-secondary/40 px-3 py-2.5 text-xs leading-snug text-muted-foreground">
           <div className="flex items-start gap-2">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />

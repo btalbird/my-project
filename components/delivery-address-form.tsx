@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 
+import { AddressAutocompleteInput } from "@/components/address-autocomplete-input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -40,6 +41,7 @@ export function DeliveryAddressForm({
   const [stateVal, setStateVal] = useState("")
   const [postalCode, setPostalCode] = useState("")
   const [radiusMiles, setRadiusMiles] = useState(10)
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [savePending, setSavePending] = useState(false)
   const radiusPatchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -61,6 +63,9 @@ export function DeliveryAddressForm({
         setStateVal(data.delivery.state ?? "")
         setPostalCode(data.delivery.postalCode ?? "")
         setRadiusMiles(data.delivery.radiusMiles ?? 10)
+        if (data.delivery.lat != null && data.delivery.lng != null) {
+          setCoords({ lat: data.delivery.lat, lng: data.delivery.lng })
+        }
       }
       setLoading(false)
     })()
@@ -84,6 +89,7 @@ export function DeliveryAddressForm({
           state: stateVal,
           postalCode,
           radiusMiles,
+          ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
         }),
       })
       const data = await res.json().catch(() => ({}))
@@ -126,7 +132,22 @@ export function DeliveryAddressForm({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="delivery-line1">Street address</Label>
-              <Input id="delivery-line1" value={line1} onChange={(e) => setLine1(e.target.value)} required />
+              <AddressAutocompleteInput
+                id="delivery-line1"
+                value={line1}
+                onValueChange={(next) => {
+                  setLine1(next)
+                  setCoords(null)
+                }}
+                onSelect={(suggestion) => {
+                  setLine1(suggestion.line1)
+                  setCity(suggestion.city)
+                  setStateVal(suggestion.state)
+                  setPostalCode(suggestion.postalCode)
+                  setCoords({ lat: suggestion.lat, lng: suggestion.lng })
+                }}
+                inputClassName="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 pr-9 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] md:text-sm"
+              />
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="delivery-line2">Apt / suite (optional)</Label>

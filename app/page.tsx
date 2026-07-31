@@ -3,7 +3,6 @@ import { Categories } from "@/components/categories"
 import { PromoSection } from "@/components/promo-section"
 import { RestaurantGrid } from "@/components/restaurant-grid"
 import { AppDownload } from "@/components/app-download"
-import { Footer } from "@/components/footer"
 
 export default function HomePage() {
   return (
@@ -18,7 +17,6 @@ export default function HomePage() {
         />
         <AppDownload />
       </main>
-      <Footer />
     </div>
   )
 }

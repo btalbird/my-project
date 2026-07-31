@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { HandCoins, Leaf, UsersRound } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -146,7 +145,6 @@ export default function CommunityLedSpacesPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

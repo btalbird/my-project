@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ExternalLink, MapPin } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -153,7 +152,6 @@ export default function MehkoCountiesPage() {
           </section>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

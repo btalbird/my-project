@@ -4,42 +4,45 @@ import { requireCookUser } from "@/lib/cook-auth"
 import { prisma } from "@/lib/db"
 import { getAppBaseUrl, getListingPriceId, getStripe } from "@/lib/stripe"
 
+/**
+ * Cook listing subscription checkout (platform → cook).
+ * V2 Connect: bill the connected account directly via customer_account.
+ */
 export async function POST() {
   const auth = await requireCookUser()
   if ("response" in auth) return auth.response
 
   const { user } = auth
-  const stripe = getStripe()
-  const priceId = getListingPriceId()
-  const baseUrl = getAppBaseUrl()
 
-  let subscription = await prisma.cookSubscription.findUnique({
-    where: { userId: user.id },
-  })
-
-  let customerId = subscription?.stripeCustomerId
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: user.email,
-      name: user.name ?? undefined,
-      metadata: { userId: user.id },
-    })
-    customerId = customer.id
-    subscription = await prisma.cookSubscription.upsert({
-      where: { userId: user.id },
-      create: {
-        userId: user.id,
-        stripeCustomerId: customerId,
-        status: "incomplete",
-      },
-      update: {
-        stripeCustomerId: customerId,
-      },
-    })
+  let stripeClient: ReturnType<typeof getStripe>
+  let priceId: string
+  try {
+    stripeClient = getStripe()
+    priceId = getListingPriceId()
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Stripe billing is not configured" },
+      { status: 500 },
+    )
   }
 
-  const session = await stripe.checkout.sessions.create({
-    customer: customerId,
+  const connect = await prisma.cookConnect.findUnique({
+    where: { userId: user.id },
+    select: { stripeAccountId: true },
+  })
+
+  if (!connect?.stripeAccountId) {
+    return NextResponse.json(
+      { error: "Complete Stripe Connect onboarding before subscribing." },
+      { status: 400 },
+    )
+  }
+
+  const baseUrl = getAppBaseUrl()
+
+  const session = await stripeClient.checkout.sessions.create({
+    // V2: connected account id acts as the billing customer.
+    customer_account: connect.stripeAccountId,
     mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${baseUrl}/for-cooks/cook-dashboard?subscribed=1`,

@@ -1,11 +1,16 @@
 import Link from "next/link"
+import { notFound } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { RestaurantCartLink, RestaurantMenuClient } from "@/components/restaurant-menu-client"
 import { getDemoRestaurantById } from "@/lib/demo-restaurants"
 import { prisma } from "@/lib/db"
+import { liveKitchenWhere } from "@/lib/live-kitchens"
+import { formatCents } from "@/lib/money"
 
 type DisplayRestaurant = {
+  id: number
   name: string
   image: string
   cuisine: string
@@ -13,6 +18,7 @@ type DisplayRestaurant = {
   deliveryTime: string
   deliveryFee: string
   promo: string | null
+  isDemo: boolean
 }
 
 export default async function RestaurantDetailPage({
@@ -24,19 +30,47 @@ export default async function RestaurantDetailPage({
   const id = Number(restaurantId)
 
   let fromDatabase: DisplayRestaurant | null = null
+  let menuItems: {
+    id: number
+    name: string
+    description: string | null
+    priceCents: number
+    priceLabel: string
+    image: string | null
+    imageUrl: string | null
+  }[] = []
+
   if (Number.isFinite(id)) {
     try {
-      const row = await prisma.restaurant.findUnique({ where: { id } })
+      const row = await prisma.restaurant.findFirst({
+        where: { id, ...liveKitchenWhere() },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          cuisine: true,
+          rating: true,
+          deliveryTime: true,
+          deliveryFee: true,
+          promo: true,
+          isDemo: true,
+        },
+      })
       if (row) {
-        fromDatabase = {
-          name: row.name,
-          image: row.image,
-          cuisine: row.cuisine,
-          rating: row.rating,
-          deliveryTime: row.deliveryTime,
-          deliveryFee: row.deliveryFee,
-          promo: row.promo ?? null,
-        }
+        fromDatabase = row
+        const items = await prisma.menuItem.findMany({
+          where: { restaurantId: id, isAvailable: true },
+          orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+        })
+        menuItems = items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          priceCents: item.priceCents,
+          priceLabel: formatCents(item.priceCents),
+          image: item.image,
+          imageUrl: item.imageUrl,
+        }))
       }
     } catch {
       fromDatabase = null
@@ -44,31 +78,11 @@ export default async function RestaurantDetailPage({
   }
 
   const demo = Number.isFinite(id) ? getDemoRestaurantById(id) : undefined
-  const restaurant = fromDatabase ?? demo ?? null
+  const restaurant = fromDatabase ?? (demo ? { ...demo, id, isDemo: true } : null)
   const usingDemoFallback = !fromDatabase && Boolean(demo)
 
   if (!restaurant) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-        <nav className="text-sm text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <Link href="/restaurants" className="hover:text-foreground transition-colors">
-            Restaurants
-          </Link>
-        </nav>
-        <h1 className="mt-6 text-3xl font-bold text-foreground">Restaurant not found</h1>
-        <p className="mt-2 text-muted-foreground">
-          We couldn&apos;t load this kitchen. Try another from the list, or seed the database if you&apos;re running
-          locally.
-        </p>
-        <Button asChild className="mt-6 rounded-full">
-          <Link href="/restaurants">Browse restaurants</Link>
-        </Button>
-      </main>
-    )
+    notFound()
   }
 
   return (
@@ -113,7 +127,7 @@ export default async function RestaurantDetailPage({
             </p>
           ) : null}
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button className="rounded-full">Order coming soon</Button>
+            {fromDatabase ? <RestaurantCartLink restaurantName={restaurant.name} /> : null}
             <Button asChild variant="outline" className="rounded-full">
               <Link href="/restaurants">More kitchens</Link>
             </Button>
@@ -124,10 +138,22 @@ export default async function RestaurantDetailPage({
       <Card className="mt-10 border-2 border-border">
         <CardHeader>
           <CardTitle className="font-serif text-xl">Menu</CardTitle>
-          <CardDescription>Dishes from this kitchen will show here when the menu is connected.</CardDescription>
+          <CardDescription>
+            {fromDatabase
+              ? "Add items to your cart, then check out securely with Stripe."
+              : "Dishes from this kitchen will show here when the menu is connected."}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">No menu items yet.</p>
+          {fromDatabase ? (
+            <RestaurantMenuClient
+              restaurantId={restaurant.id}
+              restaurantName={restaurant.name}
+              items={menuItems}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">No menu items yet.</p>
+          )}
         </CardContent>
       </Card>
     </main>

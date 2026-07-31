@@ -106,6 +106,13 @@ export async function geocodeFreeTextAddress(
   }
 }
 
+export function parseOptionalCoords(body: Record<string, unknown>): { lat: number; lng: number } | null {
+  const lat = typeof body.lat === "number" ? body.lat : Number(body.lat)
+  const lng = typeof body.lng === "number" ? body.lng : Number(body.lng)
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+  return { lat, lng }
+}
+
 export function toGeocodedDelivery(
   input: DeliveryAddressInput,
   coords: { lat: number; lng: number },

@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { HeartHandshake, Leaf, Recycle, UtensilsCrossed } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -117,7 +116,6 @@ export default function FoodDonationPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

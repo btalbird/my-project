@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { CheckCircle2, ClipboardList, ExternalLink, ShieldCheck, Thermometer } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -241,7 +240,6 @@ export default function FoodSafetyPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

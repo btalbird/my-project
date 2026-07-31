@@ -1,10 +1,13 @@
 import { cookies } from "next/headers"
 
-/** HttpOnly cookie storing the signed-in user's `User.id` (Prisma cuid). */
+import { parseSessionToken } from "@/lib/session-token"
+
+/** HttpOnly cookie storing a signed session token for the user's `User.id`. */
 export const SESSION_COOKIE = "itk_uid"
 
 export async function getSessionUserId(): Promise<string | null> {
   const jar = await cookies()
   const v = jar.get(SESSION_COOKIE)?.value
-  return v && v.length > 0 ? v : null
+  if (!v) return null
+  return await parseSessionToken(v)
 }

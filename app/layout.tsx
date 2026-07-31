@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
-import { Fraunces, Geist_Mono, Inclusive_Sans } from 'next/font/google'
+import { Cormorant_Garamond, Fraunces, Geist_Mono, Inclusive_Sans, Instrument_Serif } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 
+import { ConditionalFooter } from '@/components/conditional-footer'
 import { Header } from '@/components/header'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 const inclusiveSans = Inclusive_Sans({
@@ -17,6 +19,23 @@ const headingFallback = Fraunces({
   variable: '--font-heading-fallback',
   weight: 'variable',
   axes: ['SOFT', 'WONK', 'opsz'],
+})
+
+/**
+ * Page-preview heading serif (/for-cooks/become-a-cook — .font-heading-preview).
+ * PENDING: user reviewing before possible site-wide rollout (Cormorant + Instrument Serif).
+ */
+const headingPreview = Cormorant_Garamond({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-heading-preview',
+  weight: ['500', '600', '700'],
+})
+
+/** Page-preview body serif (/for-cooks/become-a-cook only — opt-in via .become-cook-body-preview). */
+const bodyPreview = Instrument_Serif({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-body-preview',
+  weight: '400',
 })
 
 const geistMono = Geist_Mono({
@@ -45,11 +64,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inclusiveSans.variable} ${headingFallback.variable} ${geistMono.variable} bg-background`}
+      className={`${inclusiveSans.variable} ${headingFallback.variable} ${headingPreview.variable} ${bodyPreview.variable} ${geistMono.variable} bg-background`}
     >
-      <body className="font-sans antialiased bg-background">
+      <body className="flex min-h-screen flex-col font-sans antialiased bg-background">
         <Header />
-        {children}
+        <div className="flex-1">{children}</div>
+        <ConditionalFooter />
+        <Toaster richColors closeButton position="top-center" />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

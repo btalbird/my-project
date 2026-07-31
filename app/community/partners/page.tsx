@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { CommunityPartnersBrowser } from "@/components/community-partners-browser"
-import { Footer } from "@/components/footer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { COMMUNITY_PARTNERS } from "@/lib/community-partners"
@@ -57,7 +56,6 @@ export default function CommunityPartnersPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

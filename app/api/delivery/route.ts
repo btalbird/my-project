@@ -5,6 +5,7 @@ import {
   geocodeDeliveryInput,
   geocodeFreeTextAddress,
   parseDeliveryInput,
+  parseOptionalCoords,
   toGeocodedDelivery,
   type GeocodedDelivery,
 } from "@/lib/delivery-address"
@@ -130,11 +131,16 @@ export async function PUT(req: Request) {
     if ("error" in parsed) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
-    const geocoded = await geocodeDeliveryInput(parsed)
-    if ("error" in geocoded) {
-      return NextResponse.json({ error: geocoded.error }, { status: 422 })
+    const providedCoords = parseOptionalCoords(body)
+    if (providedCoords) {
+      delivery = toGeocodedDelivery(parsed, providedCoords)
+    } else {
+      const geocoded = await geocodeDeliveryInput(parsed)
+      if ("error" in geocoded) {
+        return NextResponse.json({ error: geocoded.error }, { status: 422 })
+      }
+      delivery = toGeocodedDelivery(parsed, geocoded.coords)
     }
-    delivery = toGeocodedDelivery(parsed, geocoded.coords)
   }
 
   const userId = await getSessionUserId()

@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
 import { MemberPortalClient } from "@/components/member-portal-client"
-import { Footer } from "@/components/footer"
 import { getSessionUserId } from "@/lib/session"
 
 export const metadata: Metadata = {
@@ -19,7 +18,6 @@ export default async function MemberPortalPage() {
       <main className="border-b border-border">
         <MemberPortalClient />
       </main>
-      <Footer />
     </div>
   )
 }

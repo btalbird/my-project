@@ -2,7 +2,10 @@ import type { UserRole } from "@prisma/client"
 import { NextResponse } from "next/server"
 
 import { getSessionUser, type SessionUser } from "@/lib/auth-user"
+import { COOK_SIGNIN_PATH, cookSignInUrl, isCookPortalPath } from "@/lib/cook-portal-paths"
 import { prisma } from "@/lib/db"
+
+export { COOK_SIGNIN_PATH, cookSignInUrl, isCookPortalPath }
 
 export function isCookRole(role: UserRole): boolean {
   return role === "COOK" || role === "ADMIN"

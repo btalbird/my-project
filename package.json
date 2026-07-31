@@ -12,7 +12,8 @@
     "db:seed": "node ./scripts/seed.mjs",
     "build": "node ./scripts/build.mjs",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "stripe:check": "node ./scripts/stripe-setup-check.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -65,7 +66,7 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
     "sonner": "^1.7.1",
-    "stripe": "^22.2.0",
+    "stripe": "^22.4.0",
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
     "zod": "^3.24.1"

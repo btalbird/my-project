@@ -1,5 +1,4 @@
 import { DeliveryAddressForm } from "@/components/delivery-address-form"
-import { Footer } from "@/components/footer"
 
 export default function DeliveryPage() {
   return (
@@ -13,7 +12,6 @@ export default function DeliveryPage() {
           <DeliveryAddressForm />
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

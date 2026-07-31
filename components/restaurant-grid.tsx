@@ -31,12 +31,22 @@ export function RestaurantGrid({ title, subtitle }: RestaurantGridProps) {
   useEffect(() => {
     let cancelled = false
     ;(async () => {
-      const res = await fetch("/api/kitchens/nearby")
-      const data = (await res.json()) as { kitchens?: KitchenRow[]; needsAddress?: boolean }
-      if (cancelled) return
-      setHasAddress(!data.needsAddress)
-      setNearby(Array.isArray(data.kitchens) ? data.kitchens : [])
-      setLoading(false)
+      try {
+        const res = await fetch("/api/kitchens/nearby")
+        const data = res.ok
+          ? ((await res.json()) as { kitchens?: KitchenRow[]; needsAddress?: boolean })
+          : { kitchens: [], needsAddress: false }
+        if (cancelled) return
+        setHasAddress(!data.needsAddress)
+        setNearby(Array.isArray(data.kitchens) ? data.kitchens : [])
+      } catch {
+        if (!cancelled) {
+          setHasAddress(false)
+          setNearby([])
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
     })()
     return () => {
       cancelled = true

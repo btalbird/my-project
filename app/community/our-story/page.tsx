@@ -11,7 +11,6 @@ import {
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
-import { Footer } from "@/components/footer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -156,7 +155,6 @@ export default function AboutMunchPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

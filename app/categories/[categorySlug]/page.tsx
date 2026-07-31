@@ -1,4 +1,3 @@
-import { Footer } from "@/components/footer"
 import { CategoryPageClient } from "@/components/category-page-client"
 import { prisma } from "@/lib/db"
 
@@ -17,7 +16,6 @@ export default async function CategoryPage({
   return (
     <div className="min-h-screen bg-background">
       <CategoryPageClient categorySlug={categorySlug} categoryName={categoryName} />
-      <Footer />
     </div>
   )
 }

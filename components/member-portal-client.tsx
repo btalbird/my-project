@@ -3,6 +3,7 @@
 import { startTransition, useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 
+import { AddressAutocompleteInput } from "@/components/address-autocomplete-input"
 import { RestaurantCard } from "@/components/restaurant-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -42,6 +43,7 @@ export function MemberPortalClient() {
   const [stateVal, setStateVal] = useState("")
   const [postalCode, setPostalCode] = useState("")
   const [radiusMiles, setRadiusMiles] = useState(10)
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [kitchens, setKitchens] = useState<KitchenRow[]>([])
   const [kitchensLoading, setKitchensLoading] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -59,6 +61,9 @@ export function MemberPortalClient() {
     setStateVal(data.delivery.state ?? "")
     setPostalCode(data.delivery.postalCode ?? "")
     setRadiusMiles(data.delivery.radiusMiles ?? 10)
+    if (data.delivery.lat != null && data.delivery.lng != null) {
+      setCoords({ lat: data.delivery.lat, lng: data.delivery.lng })
+    }
   }, [])
 
   const loadKitchens = useCallback(async (radius: number) => {
@@ -113,6 +118,7 @@ export function MemberPortalClient() {
           state: stateVal,
           postalCode,
           radiusMiles,
+          ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
         }),
       })
       const data = await res.json().catch(() => ({}))
@@ -167,13 +173,22 @@ export function MemberPortalClient() {
             {saveError ? <p className="text-sm text-destructive">{saveError}</p> : null}
             <div className="space-y-2">
               <Label htmlFor="addr1">Street address</Label>
-              <Input
+              <AddressAutocompleteInput
                 id="addr1"
                 value={line1}
-                onChange={(e) => setLine1(e.target.value)}
+                onValueChange={(next) => {
+                  setLine1(next)
+                  setCoords(null)
+                }}
+                onSelect={(suggestion) => {
+                  setLine1(suggestion.line1)
+                  setCity(suggestion.city)
+                  setStateVal(suggestion.state)
+                  setPostalCode(suggestion.postalCode)
+                  setCoords({ lat: suggestion.lat, lng: suggestion.lng })
+                }}
                 placeholder="1234 Maple Ave"
-                autoComplete="street-address"
-                required
+                inputClassName="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 pr-9 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] md:text-sm"
               />
             </div>
             <div className="space-y-2">
@@ -272,7 +287,7 @@ export function MemberPortalClient() {
             <a className="underline hover:text-foreground" href="https://nominatim.openstreetmap.org/" target="_blank" rel="noreferrer">
               OpenStreetMap Nominatim
             </a>
-            . Demo seed kitchens are centered near Los Angeles for testing.
+            .
           </p>
         </CardContent>
       </Card>

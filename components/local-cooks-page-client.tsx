@@ -32,11 +32,12 @@ export function LocalCooksPageClient({ sampleChefs }: Props) {
   const [nearby, setNearby] = useState<KitchenRow[]>([])
   const [deliveryLabel, setDeliveryLabel] = useState("Your delivery area")
   const [needsAddress, setNeedsAddress] = useState(true)
+  const [monthlyListingFee, setMonthlyListingFee] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([fetch("/api/kitchens/nearby"), fetch("/api/delivery")])
-      .then(async ([nearbyRes, deliveryRes]) => {
+    Promise.all([fetch("/api/kitchens/nearby"), fetch("/api/delivery"), fetch("/api/cooks/listing-fee")])
+      .then(async ([nearbyRes, deliveryRes, feeRes]) => {
         const nearbyData = (await nearbyRes.json()) as {
           kitchens?: KitchenRow[]
           needsAddress?: boolean
@@ -44,6 +45,7 @@ export function LocalCooksPageClient({ sampleChefs }: Props) {
         const deliveryData = (await deliveryRes.json()) as {
           delivery?: { snippet?: string; formatted?: string } | null
         }
+        const feeData = (await feeRes.json()) as { fee?: { label?: string } }
         if (cancelled) return
         setNeedsAddress(Boolean(nearbyData.needsAddress))
         setNearby(Array.isArray(nearbyData.kitchens) ? nearbyData.kitchens : [])
@@ -52,6 +54,9 @@ export function LocalCooksPageClient({ sampleChefs }: Props) {
             deliveryData.delivery?.formatted ||
             "Your delivery area",
         )
+        if (typeof feeData.fee?.label === "string") {
+          setMonthlyListingFee(feeData.fee.label)
+        }
       })
       .catch(() => {})
     return () => {
@@ -140,7 +145,13 @@ export function LocalCooksPageClient({ sampleChefs }: Props) {
             <h2 className="font-serif text-xl font-bold text-foreground">Kitchens near you</h2>
             <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {filteredNearby.map((kitchen) => (
-                <RestaurantCard key={kitchen.id} restaurant={kitchen} />
+                <RestaurantCard
+                  key={kitchen.id}
+                  restaurant={{
+                    ...kitchen,
+                    monthlyListingFee: monthlyListingFee ?? undefined,
+                  }}
+                />
               ))}
             </div>
           </section>
@@ -151,7 +162,11 @@ export function LocalCooksPageClient({ sampleChefs }: Props) {
           <p className="mt-1 text-sm text-muted-foreground">Preview profiles for the local cooks experience.</p>
           <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
             {filteredSamples.map((chef) => (
-              <PersonalChefCard key={chef.id} chef={chef} />
+              <PersonalChefCard
+                key={chef.id}
+                chef={chef}
+                monthlyListingFee={monthlyListingFee ?? undefined}
+              />
             ))}
           </div>
         </section>
