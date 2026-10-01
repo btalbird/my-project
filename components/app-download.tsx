@@ -1,6 +1,7 @@
 "use client"
 
-import { Leaf, Users, Heart, ChefHat } from "lucide-react"
+import Image from "next/image"
+import { Users, Heart, ChefHat } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -42,22 +43,20 @@ export function AppDownload() {
           <div className="flex justify-center">
             <div className="relative">
               {/* Rustic illustration */}
-              <div className="w-72 h-72 rounded-full bg-card border-4 border-dashed border-primary/30 flex items-center justify-center shadow-xl">
-                <div className="text-center space-y-4">
-                  <div className="flex justify-center gap-4 text-5xl">
-                    <span>🥗</span>
-                    <span>🍲</span>
-                    <span>🥘</span>
-                  </div>
-                  <p className="text-muted-foreground font-serif italic text-sm px-8">Homemade goodness delivered with care</p>
+              <div className="h-80 w-80 overflow-hidden rounded-3xl border-4 border-dashed border-primary/30 bg-white p-1.5 shadow-xl">
+                <div className="relative h-full w-full overflow-hidden rounded-[1.35rem]">
+                  <Image
+                    src="/images/homemade-goodness.jpg"
+                    alt="Someone garnishing a homemade oatmeal bowl with bananas and berries"
+                    fill
+                    className="object-cover object-[32%_center]"
+                    sizes="320px"
+                  />
                 </div>
               </div>
               {/* Floating badges */}
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border-2 border-primary/20">
-                <Leaf className="w-8 h-8 text-primary" />
-              </div>
-              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-accent/20 rounded-2xl flex items-center justify-center border-2 border-accent/30">
-                <Users className="w-8 h-8 text-accent" />
+              <div className="absolute -bottom-4 -left-4 flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-rose-500 bg-accent/20">
+                <Users className="h-8 w-8 fill-none text-rose-500" strokeWidth={2.5} />
               </div>
               <div className="absolute top-1/2 -translate-y-1/2 -right-8 w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center border-2 border-rose-200">
                 <Heart className="w-6 h-6 text-rose-500" />

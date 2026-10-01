@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
@@ -105,12 +106,6 @@ export function SignInForm() {
                 {pending ? "Signing in…" : "Sign in"}
               </Button>
 
-              <p className="text-center text-xs text-muted-foreground">
-                Demo account: <span className="font-medium text-foreground">demo@munch.com</span> /{" "}
-                <span className="font-medium text-foreground">demo1234</span> (seeded orders after{" "}
-                <code className="rounded bg-muted px-1">node ./scripts/seed.mjs</code>).
-              </p>
-
               <div className="relative py-2">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t" />
@@ -166,13 +161,16 @@ export function SignInForm() {
             </div>
 
             <div className="flex items-center justify-center">
-              <div className="w-full max-w-xl rounded-3xl border bg-card/50 p-6 backdrop-blur">
-                <div
-                  className="flex w-full items-center justify-center rounded-2xl bg-white p-6 text-center text-sm font-medium text-black"
-                  style={{ aspectRatio: "900 / 700" }}
-                >
-                  Graphic placeholder - one neighbor/chef passing food off to neighbor/family. Should have good
-                  representation of regular people - different races, hair textures, body types, etc.
+              <div className="w-full max-w-xl overflow-hidden rounded-3xl border bg-white p-2 backdrop-blur">
+                <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "900 / 700" }}>
+                  <Image
+                    src="/images/signin-shared-table.jpg"
+                    alt="A shared table of bread, salad, vegetables, and drinks"
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 36rem, 100vw"
+                    priority
+                  />
                 </div>
               </div>
             </div>

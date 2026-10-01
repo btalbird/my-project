@@ -238,7 +238,7 @@ function ContactUsPageInner() {
                 <CardContent className="space-y-3">
                   <div className="grid gap-2">
                     <Button asChild variant="outline" className="justify-start rounded-full">
-                      <Link href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                      <Link href="https://www.instagram.com/munch.community" target="_blank" rel="noopener noreferrer">
                         <Instagram className="mr-2 h-4 w-4" aria-hidden />
                         Instagram
                       </Link>

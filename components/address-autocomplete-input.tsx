@@ -37,6 +37,8 @@ export function AddressAutocompleteInput({
   const rootRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+  /** Skip the lookup that would fire when a pick updates the controlled input. */
+  const suppressQueriesRef = useRef<Set<string> | null>(null)
 
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -55,6 +57,11 @@ export function AddressAutocompleteInput({
   }, [])
 
   useEffect(() => {
+    if (suppressQueriesRef.current?.has(value)) {
+      return
+    }
+    suppressQueriesRef.current = null
+
     const trimmed = value.trim()
     if (trimmed.length < 3) {
       setSuggestions([])
@@ -97,8 +104,10 @@ export function AddressAutocompleteInput({
   }, [value])
 
   function choose(suggestion: AddressSuggestion) {
+    suppressQueriesRef.current = new Set(
+      [suggestion.line1, suggestion.label].filter((part) => part.trim().length > 0),
+    )
     onSelect(suggestion)
-    onValueChange(suggestion.label)
     setOpen(false)
     setActiveIndex(-1)
     setSuggestions([])

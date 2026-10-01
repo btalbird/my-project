@@ -16,6 +16,35 @@ import { useCartCount } from "@/hooks/use-cart-count"
 import { SiteMobileMenu } from "@/components/site-mobile-menu"
 import { SearchBar } from "./search-bar"
 
+const SEARCH_PLACEHOLDER = "Search kitchens, cuisines, or cooks"
+
+function HeaderSearch() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const [draft, setDraft] = useState("")
+
+  useEffect(() => {
+    if (pathname !== "/restaurants") setDraft("")
+  }, [pathname])
+
+  function submitSearch(query: string) {
+    const trimmed = query.trim()
+    const href = trimmed ? `/restaurants?q=${encodeURIComponent(trimmed)}` : "/restaurants"
+    setDraft(trimmed)
+    router.push(href)
+  }
+
+  return (
+    <SearchBar
+      value={draft}
+      onChange={setDraft}
+      onSubmit={submitSearch}
+      placeholder={SEARCH_PLACEHOLDER}
+      aria-label="Search kitchens, food types, or cooks"
+    />
+  )
+}
+
 export function Header() {
   const router = useRouter()
   const pathname = usePathname()
@@ -107,7 +136,7 @@ export function Header() {
 
           {/* Search Bar - Desktop */}
           <div className="hidden lg:block flex-1 max-w-xl">
-            <SearchBar />
+            <HeaderSearch />
           </div>
 
           {/* Right Actions */}
@@ -214,7 +243,7 @@ export function Header() {
 
         {/* Mobile Search */}
         <div className="lg:hidden pb-3">
-          <SearchBar />
+          <HeaderSearch />
         </div>
       </div>
     </header>

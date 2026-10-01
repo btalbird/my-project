@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 import { AddressAutocompleteInput } from "@/components/address-autocomplete-input"
 import { Button } from "@/components/ui/button"
@@ -34,6 +35,7 @@ export function DeliveryAddressForm({
   description = "We use your address to show MEHKO kitchens near you and sort them by distance.",
   onSaved,
 }: Props) {
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [line1, setLine1] = useState("")
   const [line2, setLine2] = useState("")
@@ -99,6 +101,8 @@ export function DeliveryAddressForm({
       }
       const saved = (data as { delivery: DeliveryPayload }).delivery
       onSaved?.(saved)
+      router.push("/restaurants")
+      router.refresh()
     } finally {
       setSavePending(false)
     }

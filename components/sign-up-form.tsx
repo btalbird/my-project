@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -129,12 +130,16 @@ export function SignUpForm() {
       </div>
 
       <div className="hidden lg:flex lg:items-center">
-        <div className="relative w-full overflow-hidden rounded-3xl border-2 border-border bg-card">
-          <div
-            className="flex w-full items-center justify-center p-6 text-center text-sm font-medium text-foreground"
-            style={{ aspectRatio: "900 / 700" }}
-          >
-            Graphic placeholder
+        <div className="relative w-full overflow-hidden rounded-3xl border-2 border-border bg-white p-2">
+          <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "900 / 700" }}>
+            <Image
+              src="/images/signup-shared-breakfast.jpg"
+              alt="A shared breakfast table with waffles, eggs, coffee, and fruit"
+              fill
+              className="object-cover"
+              sizes="(min-width: 1024px) 36rem, 100vw"
+              priority
+            />
           </div>
         </div>
       </div>

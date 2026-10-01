@@ -47,6 +47,10 @@ export async function loadLiveKitchenRows(filters?: NearbyKitchenFilters) {
             OR: [
               { name: { contains: q, mode: "insensitive" as const } },
               { cuisine: { contains: q, mode: "insensitive" as const } },
+              { category: { name: { contains: q, mode: "insensitive" as const } } },
+              { owner: { name: { contains: q, mode: "insensitive" as const } } },
+              { tags: { some: { tag: { name: { contains: q, mode: "insensitive" as const } } } } },
+              { menuItems: { some: { name: { contains: q, mode: "insensitive" as const } } } },
             ],
           }
         : {}),

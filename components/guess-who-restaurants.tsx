@@ -272,7 +272,12 @@ export function GuessWhoRestaurants({ query }: { query: string }) {
         </div>
       ) : restaurants.length === 0 ? (
         <div className="mb-4 rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm text-muted-foreground">
-          No live kitchens match your filters in this area. Try a wider radius on{" "}
+          {query.trim() ? (
+            <>No kitchens near you match “{query.trim()}”. </>
+          ) : (
+            <>No live kitchens match your filters in this area. </>
+          )}
+          Try a wider radius on{" "}
           <Link href="/delivery" className="font-medium text-primary hover:underline">
             delivery settings
           </Link>
